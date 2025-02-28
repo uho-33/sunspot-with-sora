@@ -68,11 +68,11 @@ def process_fits_file(input_path, output_dir, allow_errors=False):
 
 if __name__ == "__main__":
     start_time = time.time()
-    os.chdir(r"E:\study-and-research\太阳黑子")
+    os.chdir(r"E:\study-and-research\sunspot-with-sora")
 
     # Get all FITS files in the input directory
-    input_dir = Path(r"data\origin\Ic_720s")
-    output_dir = Path(r"data\processed\Ic_720s_normalize_distance")
+    input_dir = Path(r"data\origin\Ic_nolimbdark_720s")
+    output_dir = Path(r"data\processed\Ic_nolimbdark_720s_normalize_distance")
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Pre-filter files to process
