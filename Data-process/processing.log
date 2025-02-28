@@ -1,0 +1,632 @@
+2025-02-27 23:08:47,084 - INFO - Checking 2160 files for processing status...
+2025-02-27 23:08:47,290 - INFO - Found 568 files to process, 1592 already processed
+2025-02-27 23:08:47,290 - INFO - Starting processing with 10 workers
+2025-02-27 23:08:47,292 - INFO - Processing batch 1 of 57 (10 files)
+2025-02-27 23:08:59,861 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230315_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,425 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230315_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,438 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230316_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,675 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230316_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,727 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230317_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,831 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230317_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,968 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230318_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,970 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230319_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:00,997 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230320_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:01,000 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230318_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:01,066 - INFO - Processing batch 2 of 57 (10 files)
+2025-02-27 23:09:04,034 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230323_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,078 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230325_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,083 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230321_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,104 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230323_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,106 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230321_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,116 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230324_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,124 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230320_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,144 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230322_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,161 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230324_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,183 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230322_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:04,253 - INFO - Processing batch 3 of 57 (10 files)
+2025-02-27 23:09:07,350 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230327_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,474 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230328_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,483 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230325_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,486 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230328_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,535 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230329_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,535 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230330_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,538 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230330_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,555 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230329_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,586 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230326_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,641 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230326_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:07,702 - INFO - Processing batch 4 of 57 (10 files)
+2025-02-27 23:09:10,532 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230401_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,557 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230402_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,598 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230331_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,604 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230331_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,711 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230403_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,723 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230402_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,730 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230401_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,750 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230404_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:10,813 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230405_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:11,032 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230404_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:11,093 - INFO - Processing batch 5 of 57 (10 files)
+2025-02-27 23:09:13,756 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230410_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,819 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230408_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,895 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230407_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,903 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230410_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,924 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230407_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,925 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230406_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,952 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230409_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,990 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230408_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:13,993 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230409_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:14,000 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230406_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:14,058 - INFO - Processing batch 6 of 57 (10 files)
+2025-02-27 23:09:16,830 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230412_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,859 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230413_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,873 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230413_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,896 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230416_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,898 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230414_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,900 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230412_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,907 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230414_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,983 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230416_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:16,996 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230411_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:17,061 - INFO - Processing batch 7 of 57 (10 files)
+2025-02-27 23:09:19,816 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230419_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,821 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230422_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,829 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230417_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,837 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230420_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,844 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230417_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,864 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230422_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,879 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230419_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,896 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230418_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,923 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230418_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,923 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230423_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:19,984 - INFO - Processing batch 8 of 57 (10 files)
+2025-02-27 23:09:22,719 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230425_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,774 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230425_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,790 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230426_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,823 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230428_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,829 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230428_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,841 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230427_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,856 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230424_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,879 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230424_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,901 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230426_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,918 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230427_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:22,976 - INFO - Processing batch 9 of 57 (10 files)
+2025-02-27 23:09:25,826 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230429_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:25,838 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230501_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:25,893 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230503_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:25,908 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230502_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:25,912 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230429_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:25,932 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230502_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:26,020 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230503_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:26,023 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230504_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:26,043 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230501_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:26,122 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230430_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:26,179 - INFO - Processing batch 10 of 57 (10 files)
+2025-02-27 23:09:28,919 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230507_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,042 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230507_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,056 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230508_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,085 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230506_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,091 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230506_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,098 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230505_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,100 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230509_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,106 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230508_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,121 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230505_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,127 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230504_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:29,187 - INFO - Processing batch 11 of 57 (10 files)
+2025-02-27 23:09:31,916 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230513_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,001 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230513_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,004 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230512_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,005 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230511_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,016 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230510_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,019 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230511_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,030 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230509_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,048 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230512_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,065 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230510_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,072 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230514_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:32,132 - INFO - Processing batch 12 of 57 (10 files)
+2025-02-27 23:09:34,836 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230514_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,876 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230515_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,905 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230518_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,918 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230515_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,930 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230518_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,931 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230516_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,933 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230519_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,951 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230517_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:34,962 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230516_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:35,022 - INFO - Processing batch 13 of 57 (10 files)
+2025-02-27 23:09:37,685 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230521_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,701 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230522_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,748 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230520_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,773 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230522_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,795 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230523_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,800 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230519_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,818 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230523_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:37,877 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230524_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:38,048 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230521_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:38,097 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230520_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:38,155 - INFO - Processing batch 14 of 57 (10 files)
+2025-02-27 23:09:40,847 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230524_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:40,872 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230527_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:40,885 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230529_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:40,896 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230528_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:40,928 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230525_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:40,943 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230526_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:40,990 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230528_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:41,039 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230525_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:41,045 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230527_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:41,144 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230526_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:41,205 - INFO - Processing batch 15 of 57 (10 files)
+2025-02-27 23:09:43,861 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230529_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:43,867 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230603_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:43,946 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230602_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:43,974 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230601_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:43,993 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230531_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:44,017 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230530_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:44,025 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230531_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:44,028 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230601_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:44,034 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230602_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:44,040 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230530_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:44,103 - INFO - Processing batch 16 of 57 (10 files)
+2025-02-27 23:09:46,624 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230607_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,776 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230603_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,783 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230605_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,791 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230605_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,804 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230608_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,837 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230606_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,838 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230604_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,855 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230604_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,858 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230607_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,858 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230606_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:46,918 - INFO - Processing batch 17 of 57 (10 files)
+2025-02-27 23:09:49,606 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230613_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,632 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230611_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,665 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230610_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,700 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230612_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,727 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230608_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,757 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230609_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,759 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230612_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,810 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230611_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:49,988 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230609_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:50,237 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230610_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:50,299 - INFO - Processing batch 18 of 57 (10 files)
+2025-02-27 23:09:52,937 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230613_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:52,959 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230614_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:52,988 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230618_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,004 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230615_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,021 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230616_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,061 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230614_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,087 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230617_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,092 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230617_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,101 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230615_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,103 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230616_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:53,163 - INFO - Processing batch 19 of 57 (10 files)
+2025-02-27 23:09:55,775 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230618_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,791 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230623_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,846 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230620_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,864 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230619_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,865 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230621_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,868 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230622_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,876 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230621_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,900 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230622_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:55,913 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230619_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:56,048 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230620_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:56,116 - INFO - Processing batch 20 of 57 (10 files)
+2025-02-27 23:09:58,721 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230623_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,743 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230626_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,809 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230627_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,827 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230624_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,878 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230627_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,906 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230626_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,910 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230625_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,942 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230628_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:58,957 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230625_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:59,245 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230624_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:09:59,305 - INFO - Processing batch 21 of 57 (10 files)
+2025-02-27 23:10:02,003 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230629_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,054 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230629_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,059 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230703_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,069 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230701_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,118 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230702_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,128 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230630_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,172 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230702_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,200 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230628_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,517 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230703_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,718 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230701_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:02,778 - INFO - Processing batch 22 of 57 (10 files)
+2025-02-27 23:10:05,679 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230704_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,690 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230706_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,767 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230707_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,778 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230707_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,793 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230704_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,794 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230708_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,807 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230705_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,813 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230708_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,814 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230706_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,841 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230705_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:05,907 - INFO - Processing batch 23 of 57 (10 files)
+2025-02-27 23:10:08,592 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230710_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,593 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230709_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,602 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230713_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,639 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230709_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,672 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230710_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,683 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230711_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,687 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230713_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,718 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230712_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:08,840 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230712_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:09,017 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230711_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:09,077 - INFO - Processing batch 24 of 57 (10 files)
+2025-02-27 23:10:11,778 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230717_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,819 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230718_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,823 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230716_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,841 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230715_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,844 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230714_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,851 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230717_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,852 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230718_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,878 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230715_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,881 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230714_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,882 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230716_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:11,941 - INFO - Processing batch 25 of 57 (10 files)
+2025-02-27 23:10:14,590 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230719_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,659 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230720_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,662 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230723_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,692 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230722_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,710 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230721_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,724 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230723_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,729 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230719_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,744 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230721_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,765 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230722_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,787 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230720_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:14,845 - INFO - Processing batch 26 of 57 (10 files)
+2025-02-27 23:10:17,522 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230725_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,543 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230726_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,577 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230728_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,605 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230724_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,629 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230727_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,633 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230725_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,635 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230726_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,652 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230728_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,692 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230724_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,703 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230727_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:17,762 - INFO - Processing batch 27 of 57 (10 files)
+2025-02-27 23:10:20,502 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230802_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,526 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230730_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,531 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230802_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,533 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230801_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,540 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230731_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,552 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230730_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,557 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230729_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,562 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230729_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,562 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230731_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,569 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230801_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:20,630 - INFO - Processing batch 28 of 57 (10 files)
+2025-02-27 23:10:23,341 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230803_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,390 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230806_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,407 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230807_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,419 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230807_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,423 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230804_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,424 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230805_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,425 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230803_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,433 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230804_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,443 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230805_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,451 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230806_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:23,511 - INFO - Processing batch 29 of 57 (10 files)
+2025-02-27 23:10:26,075 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230808_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,136 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230811_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,219 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230812_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,308 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230809_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,312 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230811_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,336 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230812_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,340 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230809_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,347 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230810_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,376 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230808_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,654 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230810_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:26,715 - INFO - Processing batch 30 of 57 (10 files)
+2025-02-27 23:10:29,411 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230817_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,417 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230816_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,458 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230815_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,478 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230813_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,481 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230815_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,497 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230814_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,507 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230817_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,508 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230813_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,562 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230814_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,581 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230816_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:29,641 - INFO - Processing batch 31 of 57 (10 files)
+2025-02-27 23:10:32,389 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230822_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,400 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230818_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,401 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230819_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,409 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230822_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,419 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230821_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,425 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230819_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,449 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230820_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,452 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230818_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,491 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230821_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,510 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230820_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:32,571 - INFO - Processing batch 32 of 57 (10 files)
+2025-02-27 23:10:35,257 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230825_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,262 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230824_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,282 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230826_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,305 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230827_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,367 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230823_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,386 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230827_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,426 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230825_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,604 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230824_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,635 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230823_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,826 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230828_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:35,887 - INFO - Processing batch 33 of 57 (10 files)
+2025-02-27 23:10:38,693 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230831_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,708 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230828_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,746 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230829_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,758 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230830_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,772 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230901_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,773 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230831_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,776 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230829_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,798 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230902_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,878 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230830_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,893 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230901_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:38,953 - INFO - Processing batch 34 of 57 (10 files)
+2025-02-27 23:10:41,689 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230902_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,785 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230904_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,795 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230903_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,823 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230904_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,908 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230903_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,916 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230905_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,938 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230906_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,946 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230906_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:41,997 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230907_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:42,001 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230905_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:42,062 - INFO - Processing batch 35 of 57 (10 files)
+2025-02-27 23:10:44,815 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230908_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:44,916 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230912_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:44,971 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230911_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:44,975 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230908_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:44,977 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230910_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:45,024 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230910_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:45,065 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230911_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:45,074 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230909_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:45,082 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230907_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:45,248 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230909_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:45,311 - INFO - Processing batch 36 of 57 (10 files)
+2025-02-27 23:10:48,060 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230916_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,075 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230913_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,111 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230915_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,115 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230917_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,121 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230913_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,125 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230914_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,136 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230916_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,140 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230914_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,179 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230915_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,185 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230912_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:48,247 - INFO - Processing batch 37 of 57 (10 files)
+2025-02-27 23:10:50,977 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230919_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:50,994 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230922_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,020 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230918_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,040 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230920_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,041 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230921_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,047 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230918_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,051 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230920_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,056 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230921_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,065 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230922_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,121 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230919_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:51,180 - INFO - Processing batch 38 of 57 (10 files)
+2025-02-27 23:10:53,870 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230926_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:53,933 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230923_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:53,956 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230923_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:53,966 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230924_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:53,977 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230927_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:54,001 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230927_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:54,029 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230924_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:54,057 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230925_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:54,060 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230926_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:54,773 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230925_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:54,833 - INFO - Processing batch 39 of 57 (10 files)
+2025-02-27 23:10:57,558 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231001_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,569 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231002_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,601 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230928_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,602 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230928_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,607 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230930_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,626 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231002_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,677 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231001_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,692 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230930_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,711 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230929_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,741 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20230929_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:10:57,801 - INFO - Processing batch 40 of 57 (10 files)
+2025-02-27 23:11:00,594 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231007_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,664 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231004_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,687 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231004_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,694 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231003_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,721 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231006_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,731 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231003_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,737 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231007_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,756 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231005_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,764 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231005_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,829 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231006_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:00,890 - INFO - Processing batch 41 of 57 (10 files)
+2025-02-27 23:11:03,538 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231008_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,661 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231009_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,744 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231009_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,763 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231008_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,767 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231010_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,781 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231011_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,788 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231012_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,807 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231012_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,809 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231011_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,811 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231010_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:03,872 - INFO - Processing batch 42 of 57 (10 files)
+2025-02-27 23:11:06,635 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231017_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,659 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231013_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,719 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231014_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,744 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231015_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,749 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231013_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,795 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231016_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,797 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231014_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,798 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231017_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,809 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231015_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,831 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231016_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:06,895 - INFO - Processing batch 43 of 57 (10 files)
+2025-02-27 23:11:09,732 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231021_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,750 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231022_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,782 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231021_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,785 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231018_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,796 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231022_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,799 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231020_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,811 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231018_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,835 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231020_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,856 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231019_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,856 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231019_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:09,915 - INFO - Processing batch 44 of 57 (10 files)
+2025-02-27 23:11:12,807 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231024_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,811 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231025_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,816 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231027_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,827 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231023_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,838 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231024_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,840 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231026_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,842 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231027_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,850 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231025_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,853 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231023_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:12,944 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231026_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:13,006 - INFO - Processing batch 45 of 57 (10 files)
+2025-02-27 23:11:16,199 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231028_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,209 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231029_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,230 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231101_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,243 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231028_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,250 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231101_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,268 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231031_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,273 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231030_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,285 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231029_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,287 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231031_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,323 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231102_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:16,388 - INFO - Processing batch 46 of 57 (10 files)
+2025-02-27 23:11:19,194 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231103_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,222 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231106_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,224 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231103_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,290 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231104_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,294 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231106_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,302 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231107_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,308 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231104_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,326 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231102_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,392 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231105_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,401 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231105_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:19,463 - INFO - Processing batch 47 of 57 (10 files)
+2025-02-27 23:11:22,343 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231108_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,412 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231107_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,481 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231109_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,523 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231108_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,532 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231111_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,590 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231112_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,598 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231110_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,599 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231111_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,624 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231110_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,865 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231109_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:22,926 - INFO - Processing batch 48 of 57 (10 files)
+2025-02-27 23:11:25,740 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231112_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,791 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231113_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,794 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231113_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,841 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231114_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,843 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231116_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,844 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231114_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,848 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231115_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,864 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231115_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:25,873 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231116_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:26,267 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231117_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:26,324 - INFO - Processing batch 49 of 57 (10 files)
+2025-02-27 23:11:29,136 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231117_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,267 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231118_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,310 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231120_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,332 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231119_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,349 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231121_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,355 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231119_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,360 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231120_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,368 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231122_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,424 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231118_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,463 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231121_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:29,525 - INFO - Processing batch 50 of 57 (10 files)
+2025-02-27 23:11:32,446 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231122_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,595 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231123_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,603 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231125_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,652 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231124_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,691 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231127_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,693 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231126_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,715 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231126_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,715 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231125_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,759 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231124_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,767 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231123_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:32,827 - INFO - Processing batch 51 of 57 (10 files)
+2025-02-27 23:11:36,211 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231130_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,250 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231129_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,298 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231201_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,320 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231127_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,337 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231129_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,415 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231201_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,422 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231128_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,442 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231202_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,563 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231130_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,581 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231128_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:36,641 - INFO - Processing batch 52 of 57 (10 files)
+2025-02-27 23:11:40,023 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231202_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,269 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231203_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,368 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231206_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,369 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231207_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,382 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231205_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,389 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231203_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,392 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231204_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,394 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231204_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,417 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231205_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,525 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231206_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:40,590 - INFO - Processing batch 53 of 57 (10 files)
+2025-02-27 23:11:44,183 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231209_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,279 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231208_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,284 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231207_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,336 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231208_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,342 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231210_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,367 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231209_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,418 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231211_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,477 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231211_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,490 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231210_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,543 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231212_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:44,604 - INFO - Processing batch 54 of 57 (10 files)
+2025-02-27 23:11:48,312 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231216_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,372 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231214_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,381 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231217_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,392 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231215_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,413 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231213_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,425 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231215_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,441 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231216_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,465 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231213_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,472 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231212_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,503 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231214_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:48,562 - INFO - Processing batch 55 of 57 (10 files)
+2025-02-27 23:11:52,104 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231219_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,109 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231220_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,169 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231219_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,212 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231221_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,223 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231218_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,245 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231222_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,253 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231218_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,255 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231220_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,258 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231217_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,323 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231221_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:52,383 - INFO - Processing batch 56 of 57 (10 files)
+2025-02-27 23:11:55,792 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231225_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:55,822 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231223_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:55,881 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231226_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:55,887 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231224_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:55,900 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231227_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:55,969 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231223_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:55,994 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231225_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:56,016 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231224_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:56,020 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231226_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:56,042 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231222_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:56,101 - INFO - Processing batch 57 of 57 (8 files)
+2025-02-27 23:11:59,205 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231227_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,235 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231230_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,257 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231231_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,257 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231230_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,265 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231229_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,309 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231228_000000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,343 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231228_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:11:59,360 - INFO - Saved HDF5 file: data\processed\Ic_720s_normalize_distance\hmi.ic_720s.20231229_120000_TAI.3.continuum_nd.h5
+2025-02-27 23:12:00,835 - INFO - Processing complete in 193.76 seconds:
+2025-02-27 23:12:00,835 - INFO - Total files: 2160
+2025-02-27 23:12:00,835 - INFO - Already processed (skipped): 1592
+2025-02-27 23:12:00,835 - INFO - Successfully processed: 568
+2025-02-27 23:12:00,835 - INFO - Failed to process: 0
+2025-02-27 23:12:00,835 - INFO - Average processing time per file: 0.34 seconds
