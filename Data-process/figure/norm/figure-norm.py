@@ -85,44 +85,17 @@ def main():
         logging.info("Calculating mean number of valid points...")
         
         start_time = time.time()
-        
-        # Use parallel processing to count valid points
-        valid_counts = []
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            futures = {executor.submit(count_valid_points, str(file_path)): file_path for file_path in h5_files[:100]}  # Sample 100 files
-            
-            for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures), desc="Counting valid points"):
-                file_path = futures[future]
-                try:
-                    count = future.result()
-                    if count is not None:
-                        valid_counts.append(count)
-                except Exception as e:
-                    logging.error(f"Error in processing {file_path}: {e}")
-        
-        # Calculate mean number of valid points
-        n = np.mean(valid_counts)
-        logging.info(f"Mean number of valid points (n): {n}")
-        print(f"Mean number of valid points (n): {n}")
-        
+
         # Read brightness statistics
-        brightness_stats_path = Path("data/processed/brightness/Ic_720s_normalize_dn_brightness_timeseries.npz")
-        if not brightness_stats_path.exists():
-            brightness_stats_path = Path("data/processed/Ic_720s_normalize_distancebrightness_stats.npz")
-            if not brightness_stats_path.exists():
-                logging.error("Could not find brightness stats file.")
-                print("Could not find brightness stats file.")
-                return
+        brightness_stats_path = Path("data/processed/Ic_720s_normalize_distance_brightness_stats.npz")
         
         stats = np.load(brightness_stats_path)
         mean_brightness = stats['mean']
         std_brightness = stats['std']
         
         # Calculate normalization parameters
-        m_o = mean_brightness / n
-        sigma_o = std_brightness / n
         m = 1
-        sigma = sigma_o/m_o
+        sigma = mean_brightness/std_brightness
         
         logging.info(f"Normalization parameters: m={m}, sigma={sigma}")
         print(f"Normalization parameters: m={m}, sigma={sigma}")
