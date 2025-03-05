@@ -95,7 +95,7 @@ def main():
         
         # Calculate normalization parameters
         m = 1
-        sigma = mean_brightness/std_brightness
+        sigma = std_brightness / mean_brightness
         
         logging.info(f"Normalization parameters: m={m}, sigma={sigma}")
         print(f"Normalization parameters: m={m}, sigma={sigma}")

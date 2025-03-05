@@ -11,37 +11,114 @@ import argparse
 from pathlib import Path
 import wandb
 from datetime import datetime
+from torchvision import transforms
+import sys
+import re
 
-from opensora.opensora.models.vae_v1_3.vae import OpenSoraVAE_V1_3
+# Add the project root directory to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Get the absolute path of the "opensora" folder and add it to Python path
+opensora_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'origin_opensora'))
+sys.path.append(opensora_path)  # Add opensora_path to sys.path
+
+
+# Update import path to use correct package structure
+from opensora.models.vae_v1_3.vae import OpenSoraVAE_V1_3
+from Fine_tune.utils.model_loader import load_pretrained_vae
 
 class SunObservationDataset(Dataset):
-    def __init__(self, image_dir, sequence_length=5, transform=None):
+    """
+    Dataset for Sun observation sequences.
+    
+    Each sequence is a time series of sun images stored in a subdirectory.
+    Directory structure should be:
+    root_dir/
+        sequence_dir_1/
+            000_image1.png
+            001_image2.png
+            ...
+        sequence_dir_2/
+            000_image1.png
+            ...
+        ...
+    """
+    
+    def __init__(self, root_dir, sequence_length=16, transform=None):
         """
-        Dataset for sun observation images.
         Args:
-            image_dir: Directory containing sun observation images
-            sequence_length: Number of consecutive frames to use as a sequence
-            transform: Optional transforms to apply to images
+            root_dir (string): Directory with all the sequence folders
+            sequence_length (int): Number of frames to include in each sequence
+            transform (callable, optional): Transform to be applied on images
         """
-        self.image_paths = sorted(glob.glob(os.path.join(image_dir, "*.jpg")) + 
-                                  glob.glob(os.path.join(image_dir, "*.png")))
+        self.root_dir = Path(root_dir)
         self.sequence_length = sequence_length
         self.transform = transform
         
+        # Find all sequence directories
+        self.sequence_dirs = []
+        for path in self.root_dir.iterdir():
+            if path.is_dir():
+                # Check if directory has enough images
+                image_files = sorted(list(path.glob('*.png')))
+                if len(image_files) >= sequence_length:
+                    self.sequence_dirs.append(path)
+        
+        # For debugging
+        print(f"Found {len(self.sequence_dirs)} valid sequence directories")
+        
+        # Get all image paths for quick access in __getitem__
+        self.image_paths = []
+        for seq_dir in self.sequence_dirs:
+            # Get PNG files from this sequence directory
+            seq_images = sorted(list(seq_dir.glob('*.png')))
+            
+            # Use numeric sorting to ensure correct order
+            def get_index(filename):
+                match = re.search(r'^(\d+)_', filename.name)
+                if match:
+                    return int(match.group(1))
+                return 0  # Default index if pattern not found
+            
+            seq_images.sort(key=get_index)
+            
+            # Only keep sequences with enough images
+            if len(seq_images) >= sequence_length:
+                self.image_paths.append(seq_images[:sequence_length])
+    
     def __len__(self):
-        return max(0, len(self.image_paths) - self.sequence_length + 1)
+        return len(self.image_paths)
     
     def __getitem__(self, idx):
-        # Create a sequence of images
-        sequence = []
-        for i in range(self.sequence_length):
-            img = Image.open(self.image_paths[idx + i]).convert("RGB")
+        """
+        Returns a sequence of images as tensor with shape [C, T, H, W]
+        C: channels (3 for RGB)
+        T: time/sequence length
+        H: height
+        W: width
+        """
+        sequence_paths = self.image_paths[idx]
+        frames = []
+        
+        for img_path in sequence_paths:
+            img = Image.open(img_path).convert("RGB")
             if self.transform:
                 img = self.transform(img)
-            sequence.append(img)
+            frames.append(img)
         
-        # Stack images to create a video-like tensor [C, T, H, W]
-        sequence = torch.stack(sequence, dim=1)  # Shape becomes [C, T, H, W]
+        # If transforms were applied, frames should already be tensors
+        if self.transform:
+            # Stack along new dimension to get [T, C, H, W]
+            sequence = torch.stack(frames)
+            # Permute to get [C, T, H, W]
+            sequence = sequence.permute(1, 0, 2, 3)
+        else:
+            # If no transforms, frames are PIL images
+            # Convert to numpy arrays, stack, and then to tensor
+            frames_np = [np.array(frame) for frame in frames]
+            sequence_np = np.stack(frames_np, axis=0)  # [T, H, W, C]
+            sequence_np = sequence_np.transpose(3, 0, 1, 2)  # [C, T, H, W]
+            sequence = torch.from_numpy(sequence_np).float() / 255.0
+        
         return sequence
 
 def train_vae(
@@ -69,14 +146,25 @@ def train_vae(
             
             optimizer.zero_grad()
             
-            # Forward pass
-            z, decoded, posterior = model(batch, is_training=True)
+            # Forward pass - matching OpenSoraVAE_V1_3 interface
+            result = model(batch)
+            
+            # Extract needed values based on model's actual return format
+            # For OpenSoraVAE_V1_3, the model typically returns decoded image and posterior
+            decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
             
             # Compute reconstruction loss
             recon_loss = F.mse_loss(decoded, batch)
             
-            # Compute KL divergence
-            kl_loss = posterior.kl().mean()
+            # Compute KL divergence - extract it from the model or results if available
+            # If not directly available, use a default or zero value
+            kl_loss = 0.0
+            if hasattr(model, "kl_loss"):
+                kl_loss = model.kl_loss
+            elif isinstance(result, tuple) and len(result) > 2:
+                posterior = result[2]
+                if hasattr(posterior, "kl"):
+                    kl_loss = posterior.kl().mean()
             
             # Total loss with configurable beta
             loss = recon_loss + beta * kl_loss
@@ -88,16 +176,16 @@ def train_vae(
             # Track losses
             total_loss += loss.item()
             total_recon_loss += recon_loss.item()
-            total_kl_loss += kl_loss.item()
+            total_kl_loss += kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss
             
-            pbar.set_description(f"Epoch {epoch+1}, Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_loss.item():.6f}")
+            pbar.set_description(f"Epoch {epoch+1}, Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_loss:.6f}")
             
             # Log to wandb periodically
             if batch_idx % log_interval == 0:
                 wandb.log({
                     "batch_loss": loss.item(),
                     "batch_recon_loss": recon_loss.item(),
-                    "batch_kl_loss": kl_loss.item(),
+                    "batch_kl_loss": kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss,
                     "batch": epoch * len(train_loader) + batch_idx
                 })
                 
@@ -146,14 +234,14 @@ def train_vae(
 def main():
     parser = argparse.ArgumentParser(description='Fine-tune VAE on sun observation images')
     parser.add_argument('--data_dir', type=str, required=True, help='Directory containing sun images')
-    parser.add_argument('--pretrained_path', type=str, default=None, help='Path to pretrained VAE model')
+    parser.add_argument('--pretrained_path', type=str, default=None, help='Path to pretrained VAE model or HuggingFace URL')
     parser.add_argument('--output_dir', type=str, default='./vae_finetuned', help='Output directory for checkpoints')
     parser.add_argument('--batch_size', type=int, default=2, help='Training batch size')
     parser.add_argument('--epochs', type=int, default=50, help='Number of training epochs')
     parser.add_argument('--lr', type=float, default=1e-5, help='Learning rate')
     parser.add_argument('--beta', type=float, default=0.001, help='Weight for KL divergence loss')
     parser.add_argument('--sequence_length', type=int, default=5, help='Number of frames per sequence')
-    parser.add_argument('--img_size', type=int, default=256, help='Size to resize images to (square)')
+    parser.add_argument('--image_size', type=int, default=256, help='Size to resize images to (square)')
     parser.add_argument('--run_name', type=str, default='', help='Name for this run in wandb')
     parser.add_argument('--wandb_project', type=str, default='sunspot-vae', help='WandB project name')
     args = parser.parse_args()
@@ -168,9 +256,8 @@ def main():
     wandb.init(project=args.wandb_project, name=run_name, config=vars(args))
     
     # Initialize transforms
-    from torchvision import transforms
     transform = transforms.Compose([
-        transforms.Resize((args.img_size, args.img_size)),
+        transforms.Resize((args.image_size, args.image_size)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
@@ -192,9 +279,11 @@ def main():
     # Log dataset information
     wandb.log({"dataset_size": len(dataset)})
     
-    # Load model
-    model = OpenSoraVAE_V1_3(
-        from_pretrained=args.pretrained_path,
+    # Load model using the utility function
+    print(f"Loading model from {args.pretrained_path}")
+    model = load_pretrained_vae(
+        model_class=OpenSoraVAE_V1_3,
+        pretrained_path=args.pretrained_path,
         micro_frame_size=None,  # Let the model handle all frames at once if possible
         normalization="video"
     )

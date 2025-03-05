@@ -91,10 +91,8 @@ def process_single_file(file_path):
                 std_brightness = 1.0e10
         
         # Calculate transformation parameters
-        n = valid_count  # For single image analysis, use its own count
-        m_o = mean_brightness / n
-        sigma_o = std_brightness / n
-        sigma = sigma_o/m_o
+        
+        sigma = std_brightness/mean_brightness
         m=1
         
         print("\nCalculated transformation parameters:")
@@ -128,7 +126,7 @@ def process_single_file(file_path):
         
         print("\nCreating transformed images...")
         # Original transformation
-        transformed_original = np.clip((nan_replaced_data - (m - 2 * sigma)) / (4 * sigma) * 255, 0, 255).astype(np.uint8)
+        transformed_original = np.clip((nan_replaced_data - (m - 3 * sigma)) / (6 * sigma) * 255, 0, 255).astype(np.uint8)
         
         # Alternative transformations for comparison
         transformed_minmax = np.clip((nan_replaced_data - data_min) / (data_max - data_min) * 255, 0, 255).astype(np.uint8)

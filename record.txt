@@ -1,0 +1,1 @@
+python Fine_tune/vae/finetune_vae.py --data_dir "dataset/training/time-series/L16-S8" --pretrained_path "https://huggingface.co/hpcai-tech/OpenSora-VAE-v1.3" --sequence_length 16 --image_size 480 --run_name "test-finetune_vae"
