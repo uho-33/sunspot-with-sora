@@ -77,7 +77,7 @@ def main():
     parser.add_argument('--source_dir', type=str, default='data/processed/figure/figure-downsample/360p',
                         help='Directory containing source images')
     parser.add_argument('--target_dir', type=str, default=None,
-                        help='Directory to save the dataset. If not provided, will use "dataset/training/time-series/L{window_size}-S{stride}"')
+                        help='Directory to save the dataset. If not provided, will use "dataset/training/time-se/trainingries/Lse/trainingriesw_size}-S{stride}"')
     parser.add_argument('--window_size', type=int, default=16,
                         help='Number of consecutive frames in each data point')
     parser.add_argument('--stride', type=int, default=8,
@@ -87,11 +87,13 @@ def main():
     
     # Determine target directory based on window size and stride if not provided
     if args.target_dir is None:
-        args.target_dir = f"dataset/training/time-series/L{args.window_size}-S{args.stride}"
+        raise ValueError("--target_dir can not be none")
+    else:
+        output_dir = args.target_dir + f"/L{args.window_size}-S{args.stride}"
     
     print(f"Constructing dataset with window size {args.window_size} and stride {args.stride}")
-    print(f"Target directory: {args.target_dir}")
-    construct_time_series_dataset(args.source_dir, args.target_dir, args.window_size, args.stride)
+    print(f"Output directory: {output_dir}")
+    construct_time_series_dataset(args.source_dir, output_dir, args.window_size, args.stride)
     print("Dataset construction completed!")
 
 if __name__ == "__main__":

@@ -1,1 +1,10 @@
-python Fine_tune/vae/finetune_vae.py --data_dir "dataset/training/time-series/L16-S8" --pretrained_path "https://huggingface.co/hpcai-tech/OpenSora-VAE-v1.3" --sequence_length 16 --image_size 480 --run_name "test-finetune_vae"
+# Construct dataset
+
+## Time series
+
+python Fine_tune/vae/construct_dataset.py --source_dir "data\processed\validation\figure\figure-downsample\360p" --target_dir "dataset/validation/time-series/360p"
+
+# Fine tune
+
+## VAE
+python Fine_tune/vae/finetune_vae.py --data_dir "dataset/training/time-series/L16-S8" --val_dir "data/processed/validation/figure/figure-downsample/360p" --pretrained_path "https://huggingface.co/hpcai-tech/OpenSora-VAE-v1.3" --output_dir "./checkpoint" --sequence_length 16 --image_size 480 --run_name "test-finetune_vae"
