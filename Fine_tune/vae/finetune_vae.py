@@ -11,11 +11,16 @@ from tqdm import tqdm
 import argparse
 from pathlib import Path
 import wandb
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
 from torchvision import transforms
 import sys
 import re
 import gc
+import logging
+import io
+from contextlib import redirect_stdout, redirect_stderr
+from google.colab import runtime
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -27,6 +32,58 @@ sys.path.append(opensora_path)  # Add opensora_path to sys.path
 # Update import path to use correct package structure
 from opensora.models.vae_v1_3.vae import OpenSoraVAE_V1_3
 from Fine_tune.utils.model_loader import load_pretrained_vae
+from opensora.utils.misc import to_torch_dtype
+
+# Set environment variables to avoid fragmentation in CUDA memory
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
+# Custom TQDM that writes to terminal instead of stdout
+class TqdmToTerminal(io.StringIO):
+    def __init__(self):
+        super().__init__()
+        self.terminal = sys.stdout
+        self.output = ""
+
+    def write(self, buf):
+        self.output = buf.strip('\r\n\t ')
+        self.terminal.write(buf)
+        self.terminal.flush()
+
+    def flush(self):
+        self.terminal.flush()
+
+# Configure logger
+def setup_logger(log_file=None, level=logging.INFO):
+    """Set up logger to write to file and terminal"""
+    # Root logger configuration
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    
+    # Clear any existing handlers
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+    
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    
+    # Add file handler if log file is specified
+    if log_file:
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    
+    # Add stream handler for console output
+    console_handler = logging.StreamHandler(stream=sys.stdout)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+    
+    return logger
+
+# Custom print function to ensure logging
+def safe_print(*args, **kwargs):
+    """Print function that ensures content goes to logs"""
+    msg = " ".join(str(arg) for arg in args)
+    logging.info(msg)
 
 class SunObservationDataset(Dataset):
     """
@@ -66,11 +123,11 @@ class SunObservationDataset(Dataset):
                     if len(image_files) >= sequence_length:
                         self.sequence_dirs.append(path)
         except Exception as e:
-            print(f"Error reading directory {root_dir}: {e}")
+            logging.error(f"Error reading directory {root_dir}: {e}")
             self.sequence_dirs = []
         
         # For debugging
-        print(f"Found {len(self.sequence_dirs)} valid sequence directories")
+        logging.info(f"Found {len(self.sequence_dirs)} valid sequence directories")
         
         # Get all image paths for quick access in __getitem__
         self.image_paths = []
@@ -89,6 +146,7 @@ class SunObservationDataset(Dataset):
             
             # Only keep sequences with enough images
             if len(seq_images) >= sequence_length:
+                # Make sure to take exactly sequence_length frames
                 self.image_paths.append(seq_images[:sequence_length])
     
     def __len__(self):
@@ -109,11 +167,19 @@ class SunObservationDataset(Dataset):
         frames = []
         
         try:
+            # Verify we have exactly sequence_length paths
+            assert len(sequence_paths) == self.sequence_length, \
+                f"Expected {self.sequence_length} frames but got {len(sequence_paths)}"
+                
             for img_path in sequence_paths:
                 img = Image.open(img_path).convert("RGB")
                 if self.transform:
                     img = self.transform(img)
                 frames.append(img)
+            
+            # Verify we have loaded the exact number of frames
+            assert len(frames) == self.sequence_length, \
+                f"Expected {self.sequence_length} frames but loaded {len(frames)}"
             
             # If transforms were applied, frames should already be tensors
             if self.transform:
@@ -128,6 +194,12 @@ class SunObservationDataset(Dataset):
                 sequence_np = np.stack(frames_np, axis=0)  # [T, H, W, C]
                 sequence_np = sequence_np.transpose(3, 0, 1, 2)  # [C, T, H, W]
                 sequence = torch.from_numpy(sequence_np).float() / 255.0
+                
+            # Final verification of tensor shape
+            expected_shape = (3, self.sequence_length, self.transform.transforms[0].size[0], self.transform.transforms[0].size[1]) \
+                if self.transform and hasattr(self.transform, 'transforms') else (3, self.sequence_length, None, None)
+            assert sequence.shape[0] == expected_shape[0] and sequence.shape[1] == expected_shape[1], \
+                f"Expected tensor shape starting with {expected_shape[:2]} but got {tuple(sequence.shape[:2])}"
                 
             return sequence
         except Exception as e:
@@ -169,41 +241,64 @@ def get_model_dtype(model):
         model_dtype = torch.float32
     return model_dtype
 
-def validate_vae(model, val_loader, device, beta=0.01):
+def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
     """Evaluate the model on a validation set"""
     model.eval()
     total_val_loss = 0
     total_val_recon_loss = 0
     total_val_kl_loss = 0
     
-    # Detect the model's dtype
-    model_dtype = None
-    for param in model.parameters():
-        if param.dtype in [torch.float32, torch.float16, torch.bfloat16]:
-            model_dtype = param.dtype
-            break
-    if model_dtype is None:
-        model_dtype = torch.float32  # Default to float32 if can't determine
+    # Get model dtype for type conversion
+    model_dtype = get_model_dtype(model)
+    
+    logging.info(f"Starting validation on {len(val_loader)} batches")
     
     with torch.no_grad():  # No gradient computation during validation
-        for batch in tqdm(val_loader, desc="Validating"):
-            # Convert batch to model's dtype
+        for batch_idx, batch in enumerate(val_loader):
+            # Clear cache before loading new batch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                
+            # Log progress periodically instead of using tqdm
+            if batch_idx % 10 == 0:
+                logging.info(f"Validating batch {batch_idx}/{len(val_loader)}")
+                
+            # Move batch to CPU first, then to device and convert to model's dtype
             batch = batch.to(device).to(model_dtype)
             
-            # Forward pass - explicitly set is_training=False for validation
-            result = model(batch, is_training=False)
-            
-            # Extract needed values
-            decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
-            
-            # Compute reconstruction loss
-            recon_loss = F.mse_loss(decoded, batch)
-            
-            # Compute KL divergence
-            kl_loss = compute_kl_loss(model, result)
-            
-            # Total loss
-            loss = recon_loss + beta * kl_loss
+            # Use automatic mixed precision for validation if specified
+            if amp_dtype is not None:
+                with torch.autocast(device_type=device.type, dtype=amp_dtype):
+                    # Forward pass - explicitly set is_training=False for validation
+                    result = model(batch, is_training=False)
+                    
+                    # Extract needed values
+                    decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
+                    
+                    # Compute reconstruction loss
+                    recon_loss = F.mse_loss(decoded, batch)
+                    
+                    # Compute KL divergence
+                    kl_loss = compute_kl_loss(model, result)
+                    
+                    # Total loss
+                    loss = recon_loss + beta * kl_loss
+            else:
+                # Standard precision
+                # Forward pass - explicitly set is_training=False for validation
+                result = model(batch, is_training=False)
+                
+                # Extract needed values
+                decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
+                
+                # Compute reconstruction loss
+                recon_loss = F.mse_loss(decoded, batch)
+                
+                # Compute KL divergence
+                kl_loss = compute_kl_loss(model, result)
+                
+                # Total loss
+                loss = recon_loss + beta * kl_loss
             
             # Track losses
             total_val_loss += loss.item()
@@ -211,7 +306,7 @@ def validate_vae(model, val_loader, device, beta=0.01):
             total_val_kl_loss += kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss
             
             # Free up memory
-            del batch, result, decoded
+            del batch, result, decoded, loss, recon_loss, kl_loss
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
     
@@ -232,91 +327,194 @@ def train_vae(
     model,
     train_loader,
     val_loader,
-    optimizer,
     device,
     epochs,
     save_path,
+    optimizer,
     beta=0.01,
     save_interval=10,
     log_interval=10,
-    validate_interval=1,  # Validate every N epochs
-    patience=10,          # Early stopping patience
-    scheduler=None        # Learning rate scheduler
+    validate_interval=1,
+    patience=10,
+    scheduler=None,
+    gradient_accumulation_steps=1,
+    amp_dtype=None,
+    max_grad_norm=1.0,
+    
 ):
-    """Train the VAE model with validation"""
+    """Train the VAE model with validation and memory optimization"""
     model.train()
     best_val_loss = float('inf')
     epochs_without_improvement = 0
     
+    # Get model dtype for type conversion
+    model_dtype = get_model_dtype(model)
+    logging.info(f"Training with model dtype: {model_dtype}")
+    
     # Create directories for saving models if they don't exist
     os.makedirs(save_path, exist_ok=True)
     
-    # Variable to track consecutive OOM errors
-    consecutive_oom_errors = 0
-    max_consecutive_oom_errors = 3  # Stop after this many consecutive OOM errors
+    # Initialize scaler for mixed precision training if using PyTorch AMP
+    scaler = torch.cuda.amp.GradScaler() if amp_dtype is not None and device.type == 'cuda' else None
     
-    # Detect the model's dtype
-    model_dtype = None
-    for param in model.parameters():
-        if param.dtype in [torch.float32, torch.float16, torch.bfloat16]:
-            model_dtype = param.dtype
-            break
-    if model_dtype is None:
-        model_dtype = torch.float32  # Default to float32 if can't determine
+    # Track consecutive OOM errors
+    oom_errors = 0
+    max_oom_errors = 3  # Stop training after this many consecutive OOM errors
     
-    print(f"Training with model dtype: {model_dtype}")
+    training_start_time = time.time()
     
     for epoch in range(epochs):
+        
+        
         # Training loop
         total_loss = 0
         total_recon_loss = 0
         total_kl_loss = 0
-        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
         
-        batch_count = 0
+        # Configure tqdm to write directly to terminal
+        tqdm_out = TqdmToTerminal()
+        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}", file=tqdm_out)
+        
+        # Reset optimizer gradients at the beginning of each epoch
+        optimizer.zero_grad()
+        
+        batch_start_time = time.time()
+        epoch_batch_times = []
+        
         for batch_idx, batch in enumerate(pbar):
             try:
+                # Clear cache before loading new batch
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                
+                # Debug output for batch shape
+                orig_shape = batch.shape
+                if batch.shape[1] != 3 or batch.shape[2] != model.micro_frame_size * (batch.shape[2] // model.micro_frame_size):
+                    logging.warning(f"Warning: Input batch shape {batch.shape} may not be compatible with model's micro_frame_size {model.micro_frame_size}")
+                    # Ensure sequence length is a multiple of micro_frame_size by truncating
+                    new_seq_len = (batch.shape[2] // model.micro_frame_size) * model.micro_frame_size
+                    if new_seq_len < batch.shape[2]:
+                        logging.warning(f"Truncating sequence length from {batch.shape[2]} to {new_seq_len}")
+                        batch = batch[:, :, :new_seq_len]
+                
                 # Move batch to device and convert to model's dtype
-                batch = batch.to(device).to(model_dtype)  # [B, C, T, H, W]
+                batch = batch.to(device).to(model_dtype)
                 
-                optimizer.zero_grad()
+                # Use automatic mixed precision if specified
+                if amp_dtype is not None:
+                    with torch.autocast(device_type=device.type, dtype=amp_dtype):
+                        # Forward pass - explicitly set is_training=True for training
+                        result = model(batch, is_training=True)
+                        
+                        # Extract needed values based on model's actual return format
+                        decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
+                        
+                        # Verify decoded shape matches input shape
+                        if decoded.shape != batch.shape:
+                            logging.info(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
+                            # If only time dimension differs, this is likely due to padding in the VAE
+                            # Try to crop the longer one to match the shorter one
+                            min_time = min(decoded.shape[2], batch.shape[2])
+                            decoded = decoded[:, :, :min_time]
+                            batch = batch[:, :, :min_time]
+                            logging.info(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+                        
+                        # Compute reconstruction loss
+                        recon_loss = F.mse_loss(decoded, batch)
+                        
+                        # Compute KL divergence using helper function
+                        kl_loss = compute_kl_loss(model, result)
+                        
+                        # Total loss with configurable beta
+                        loss = recon_loss + beta * kl_loss
+                        
+                        # Scale loss by gradient accumulation steps
+                        loss = loss / gradient_accumulation_steps
+                    
+                    # Backward pass with gradient scaling
+                    scaler.scale(loss).backward()
+                    
+                    # Step optimizer only after accumulating enough gradients
+                    if (batch_idx + 1) % gradient_accumulation_steps == 0:
+                        # Clip gradients to prevent exploding gradients
+                        scaler.unscale_(optimizer)
+                        torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+                        
+                        # Update parameters with gradient scaling
+                        scaler.step(optimizer)
+                        scaler.update()
+                        optimizer.zero_grad()
+                else:
+                    # Standard precision training
+                    # Forward pass - explicitly set is_training=True for training
+                    result = model(batch, is_training=True)
+                    
+                    # Extract needed values based on model's actual return format
+                    decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
+                    
+                    # Verify decoded shape matches input shape
+                    if decoded.shape != batch.shape:
+                        logging.info(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
+                        # If only time dimension differs, this is likely due to padding in the VAE
+                        # Try to crop the longer one to match the shorter one
+                        min_time = min(decoded.shape[2], batch.shape[2])
+                        decoded = decoded[:, :, :min_time]
+                        batch = batch[:, :, :min_time]
+                        logging.info(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+                    
+                    # Compute reconstruction loss
+                    recon_loss = F.mse_loss(decoded, batch)
+                    
+                    # Compute KL divergence using helper function
+                    kl_loss = compute_kl_loss(model, result)
+                    
+                    # Total loss with configurable beta
+                    loss = recon_loss + beta * kl_loss
+                    
+                    # Scale loss by gradient accumulation steps
+                    loss = loss / gradient_accumulation_steps
+                    
+                    # Backward pass
+                    loss.backward()
+                    
+                    # Step optimizer only after accumulating enough gradients
+                    if (batch_idx + 1) % gradient_accumulation_steps == 0:
+                        # Clip gradients to prevent exploding gradients
+                        torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+                        
+                        # Update parameters
+                        optimizer.step()
+                        optimizer.zero_grad()
                 
-                # Forward pass - explicitly set is_training=True for training
-                result = model(batch, is_training=True)
+                # Reset OOM error counter on successful batch
+                oom_errors = 0
                 
-                # Extract needed values based on model's actual return format
-                decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
-                
-                # Compute reconstruction loss
-                recon_loss = F.mse_loss(decoded, batch)
-                
-                # Compute KL divergence using helper function
-                kl_loss = compute_kl_loss(model, result)
-                
-                # Total loss with configurable beta
-                loss = recon_loss + beta * kl_loss
-                
-                # Backward pass
-                loss.backward()
-                optimizer.step()
-                
-                # Track losses
-                total_loss += loss.item()
+                # Track losses (multiply by gradient_accumulation_steps to get true loss)
+                actual_loss = loss.item() * gradient_accumulation_steps
+                total_loss += actual_loss
                 total_recon_loss += recon_loss.item()
                 total_kl_loss += kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss
-                batch_count += 1
                 
                 kl_value = kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss
-                pbar.set_description(f"Epoch {epoch+1}, Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_value:.6f}")
+                
+                # Record batch time
+                batch_end_time = time.time()
+                batch_duration = batch_end_time - batch_start_time
+                epoch_batch_times.append(batch_duration)
+                
+                
+                # Update progress bar with time info
+                pbar.set_description(f"Epoch {epoch+1}, Loss: {actual_loss:.6f}, Time: {batch_duration:.2f}s")
                 
                 # Log to wandb periodically
                 if batch_idx % log_interval == 0:
                     wandb.log({
-                        "batch_loss": loss.item(),
+                        "batch_loss": actual_loss,
                         "batch_recon_loss": recon_loss.item(),
                         "batch_kl_loss": kl_value,
                         "batch": epoch * len(train_loader) + batch_idx,
-                        "learning_rate": optimizer.param_groups[0]['lr']
+                        "learning_rate": optimizer.param_groups[0]['lr'],
+                        "batch_time": batch_duration
                     })
                     
                     # Log image samples periodically
@@ -334,47 +532,50 @@ def train_vae(
                             "reconstruction": wandb.Image(recon_img.numpy())
                         })
                 
-                # Reset OOM counter on successful iteration
-                consecutive_oom_errors = 0
-                
                 # Free up memory
                 del batch, result, decoded, loss, recon_loss, kl_loss
-            
-            except torch.cuda.OutOfMemoryError as e:
-                # Handle CUDA out of memory errors
-                consecutive_oom_errors += 1
-                print(f"CUDA Out of Memory Error ({consecutive_oom_errors}/{max_consecutive_oom_errors}): {e}")
-                
-                # Try to free memory
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
-                gc.collect()
                 
-                # Automatically save the model if we've trained for at least one full epoch
-                if epoch > 0:
-                    emergency_ckpt_path = os.path.join(save_path, f"vae_emergency_epoch_{epoch}_batch_{batch_idx}.pt")
-                    torch.save({
-                        'epoch': epoch,
-                        'batch_idx': batch_idx,
-                        'model_state_dict': model.state_dict(),
-                        'optimizer_state_dict': optimizer.state_dict(),
-                        'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
-                    }, emergency_ckpt_path)
-                    print(f"Emergency checkpoint saved to {emergency_ckpt_path}")
+                # Start timing next batch
+                batch_start_time = time.time()
+            
+            except torch.cuda.OutOfMemoryError as e:
+                # Handle CUDA OOM errors
+                logging.error(f"CUDA Out of Memory Error ({oom_errors+1}/{max_oom_errors}): {e}")
+                oom_errors += 1
+                
+                # Free up memory and skip this batch
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
                 
                 # Stop training if too many consecutive OOM errors
-                if consecutive_oom_errors >= max_consecutive_oom_errors:
-                    print(f"Training stopped due to {consecutive_oom_errors} consecutive CUDA Out of Memory errors.")
-                    wandb.log({"training_stopped_reason": "CUDA OOM"})
-                    wandb.finish()
-                    return
+                if oom_errors >= max_oom_errors:
+                    print(f"Training stopped due to {max_oom_errors} consecutive CUDA Out of Memory errors.")
+                    # Save the model before exiting
+                    save_path_interrupted = os.path.join(save_path, "vae_interrupted.pt")
+                    try:
+                        torch.save({
+                            'epoch': epoch,
+                            'model_state_dict': model.state_dict(),
+                            'optimizer_state_dict': optimizer.state_dict(),
+                        }, save_path_interrupted)
+                        logging.info(f"Interrupted model state saved to {save_path_interrupted}")
+                    except Exception as save_err:
+                        logging.error(f"Could not save interrupted model: {save_err}")
+                    
+                    return  # Exit the training function
                 
-                # Skip this batch
-                continue
-                
+                # Reset the optimizer to clear any gradients
+                optimizer.zero_grad()
+            
             except Exception as e:
-                print(f"Error in training batch {batch_idx}: {e}")
-                # Continue with next batch for other types of errors
+                logging.error(f"Error in training batch {batch_idx}: {e}")
+                # Make sure to zero out gradients in case of error to avoid accumulation
+                optimizer.zero_grad()
+                # Try to reclaim CUDA memory
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
                 continue
         
         # Manual garbage collection
@@ -382,43 +583,34 @@ def train_vae(
             torch.cuda.empty_cache()
         gc.collect()
         
-        # Skip the rest of the epoch if no batches were successfully processed
-        if batch_count == 0:
-            print(f"No batches were successfully processed in epoch {epoch+1}. Stopping training.")
-            wandb.log({"training_stopped_reason": "No successful batches"})
-            wandb.finish()
-            return
-        
         # Calculate training metrics
-        avg_loss = total_loss / batch_count
-        avg_recon_loss = total_recon_loss / batch_count
-        avg_kl_loss = total_kl_loss / batch_count
+        avg_loss = total_loss / len(train_loader)
+        avg_recon_loss = total_recon_loss / len(train_loader)
+        avg_kl_loss = total_kl_loss / len(train_loader)
         
-        # Log epoch metrics
-        wandb.log({
-            "epoch": epoch + 1,
-            "train_loss": avg_loss,
-            "train_recon_loss": avg_recon_loss,
-            "train_kl_loss": avg_kl_loss
-        })
-        
-        print(f"Epoch {epoch+1}/{epochs}, Avg Train Loss: {avg_loss:.6f}")
+        # Calculate average batch time for this epoch
+        avg_epoch_batch_time = sum(epoch_batch_times) / len(epoch_batch_times) if epoch_batch_times else 0
         
         # Run validation if it's time
+        validation_start_time = time.time()
+        validation_duration = 0
+        
         if (epoch + 1) % validate_interval == 0 and val_loader is not None:
             try:
-                val_metrics = validate_vae(model, val_loader, device, beta)
+                val_metrics = validate_vae(model, val_loader, device, beta, amp_dtype)
                 
                 wandb.log({
                     "epoch": epoch + 1,
                     "val_loss": val_metrics["val_loss"],
                     "val_recon_loss": val_metrics["val_recon_loss"], 
-                    "val_kl_loss": val_metrics["val_kl_loss"]
+                    "val_kl_loss": val_metrics["val_kl_loss"],
+                    "validation_time": validation_duration
                 })
                 
                 print(f"Validation Loss: {val_metrics['val_loss']:.6f}, " 
                       f"Recon: {val_metrics['val_recon_loss']:.6f}, "
-                      f"KL: {val_metrics['val_kl_loss']:.6f}")
+                      f"KL: {val_metrics['val_kl_loss']:.6f}, "
+                      f"Time: {validation_duration:.2f}s")
                 
                 # Update learning rate scheduler
                 if scheduler is not None:
@@ -438,27 +630,31 @@ def train_vae(
                         'loss': best_val_loss,
                         'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
                     }, best_model_path)
-                    print(f"New best model saved to {best_model_path}")
+                    logging.info(f"New best model saved to {best_model_path}")
                     wandb.run.summary["best_val_loss"] = best_val_loss
                     wandb.run.summary["best_epoch"] = epoch + 1
                 else:
                     epochs_without_improvement += 1
-                    print(f"No improvement for {epochs_without_improvement} epochs")
+                    logging.info(f"No improvement for {epochs_without_improvement} epochs")
                     
                 # Early stopping
                 if epochs_without_improvement >= patience:
-                    print(f"Early stopping triggered after {epoch+1} epochs")
+                    logging.info(f"Early stopping triggered after {epoch+1} epochs")
                     break
             
-            except torch.cuda.OutOfMemoryError:
-                print("CUDA Out of Memory during validation. Skipping validation for this epoch.")
-                # Try to free memory
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-                gc.collect()
             except Exception as e:
-                print(f"Error during validation: {e}")
+                logging.error(f"Error during validation: {e}")
                 # Continue with training even if validation fails
+        
+        
+        # Log to wandb
+        wandb.log({
+            "epoch": epoch + 1,
+            "train_loss": avg_loss,
+            "train_recon_loss": avg_recon_loss,
+            "train_kl_loss": avg_kl_loss,
+        })
+        
         
         # Save checkpoint
         if (epoch + 1) % save_interval == 0 or epoch == epochs - 1:
@@ -470,9 +666,23 @@ def train_vae(
                 'loss': avg_loss,
                 'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
             }, ckpt_path)
-            print(f"Checkpoint saved to {ckpt_path}")
+            logging.info(f"Checkpoint saved to {ckpt_path}")
             # Log model to wandb
             wandb.save(ckpt_path)
+    
+    # Calculate and log final timing statistics
+    training_end_time = time.time()
+    total_training_time = training_end_time - training_start_time
+    
+    # Format for human readability
+    total_time_formatted = str(timedelta(seconds=int(total_training_time)))
+    
+    # Log final timing info
+    logging.info(f"\nTraining completed in {total_time_formatted}")
+    
+    
+    # Log final timing to wandb
+    wandb.run.summary["total_training_time"] = total_training_time
 
 def main():
     parser = argparse.ArgumentParser(description='Fine-tune VAE on sun observation images')
@@ -497,11 +707,34 @@ def main():
     parser.add_argument('--lr_patience', type=int, default=3, help='Learning rate scheduler patience (epochs)')
     parser.add_argument('--lr_factor', type=float, default=0.5, help='Learning rate reduction factor')
     parser.add_argument('--micro_frame_size', type=int, default=2, 
-                       help='Micro frame size for VAE model (default is 5 for OpenSoraVAE)')
+                       help='Micro frame size for VAE model (default is 2 for OpenSoraVAE)')
+    parser.add_argument('--dtype', type=str, default=None, help='Model data type (float32, float16, bfloat16)')
+    parser.add_argument('--gradient_accumulation_steps', type=int, default=8, 
+                       help='Number of update steps to accumulate gradients for')
+    parser.add_argument('--use_amp', action='store_true', help='Use automatic mixed precision training')
+    parser.add_argument('--amp_dtype', type=str, default='bfloat16', 
+                       help='Data type for AMP (float16 or bfloat16)')
+    parser.add_argument('--max_grad_norm', type=float, default=1.0, 
+                       help='Maximum gradient norm for gradient clipping')
+    parser.add_argument('--num_workers', type=int, default=2, help='Number of dataloader workers')
+    parser.add_argument('--pin_memory', action='store_true', help='Use pinned memory for dataloaders')
+    parser.add_argument('--log_file', type=str, default=None, 
+                        help='Path to log file. If not provided, logs only to console')
+    
     args = parser.parse_args()
     
+    # Set default validate_interval if not provided
     if args.validate_interval is None:
         args.validate_interval = args.save_interval
+        
+    # Setup logging
+    setup_logger(args.log_file)
+    
+    # Replace built-in print with our logging version in some key functions
+    # This helps ensure consistent logging
+    __builtins__['print'] = safe_print
+    
+    # Set device for training
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Create output directory
@@ -510,6 +743,65 @@ def main():
     # Initialize weights and biases
     run_name = args.run_name if args.run_name else f"vae_finetune_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     wandb.init(project=args.wandb_project, name=run_name, config=vars(args))
+    
+    # Configure mixed precision training
+    amp_dtype = None
+    if args.use_amp:
+        if args.amp_dtype == 'float16':
+            amp_dtype = torch.float16
+        elif args.amp_dtype == 'bfloat16':
+            amp_dtype = torch.bfloat16
+        else:
+            print(f"Warning: Unknown AMP dtype '{args.amp_dtype}'. Using default bfloat16.")
+            amp_dtype = torch.bfloat16
+    
+    # Load model using the utility function
+    try:
+        logging.info(f"Loading model from {args.pretrained_path}")
+        
+        # Force CPU loading initially to save GPU memory 
+        cpu_device = torch.device('cpu')
+        model = load_pretrained_vae(
+            model_class=OpenSoraVAE_V1_3,
+            pretrained_path=args.pretrained_path,
+            micro_frame_size=args.micro_frame_size,
+            normalization="video"
+        )
+        
+        # Get model's dtype
+        model_dtype = get_model_dtype(model)
+        logging.info(f"Model is using dtype: {model_dtype}")
+        
+        # Override model dtype if specified
+        if args.dtype:
+            try:
+                target_dtype = to_torch_dtype(args.dtype)
+                if target_dtype != model_dtype:
+                    logging.info(f"Converting model from {model_dtype} to {target_dtype}")
+                    model = model.to(target_dtype)
+                    model_dtype = target_dtype
+            except (ValueError, TypeError) as e:
+                logging.error(f"Error converting model to {args.dtype}: {e}")
+                logging.info("Continuing with model's original dtype")
+        
+        if hasattr(model, "micro_frame_size"):
+            logging.info(f"Model micro_frame_size: {model.micro_frame_size}")
+            # Ensure sequence length is a multiple of micro_frame_size
+            if args.sequence_length % model.micro_frame_size != 0:
+                new_sequence_length = (args.sequence_length // model.micro_frame_size) * model.micro_frame_size
+                logging.warning(f"Warning: sequence_length ({args.sequence_length}) is not a multiple of micro_frame_size ({model.micro_frame_size})")
+                logging.info(f"Adjusting sequence_length from {args.sequence_length} to {new_sequence_length}")
+                args.sequence_length = new_sequence_length
+        
+        # Move to device after we know the dtype
+        model = model.to(device)
+        
+    except Exception as e:
+        logging.error(f"Error loading model: {e}")
+        return
+    
+    # Log model architecture summary
+    wandb.watch(model, log_freq=100)
     
     # Initialize transforms
     transform = transforms.Compose([
@@ -526,19 +818,19 @@ def main():
             transform=transform
         )
         if len(train_dataset) == 0:
-            print(f"Error: No valid sequences found in {args.data_dir}")
+            logging.error(f"Error: No valid sequences found in {args.data_dir}")
             return
             
         train_dataloader = DataLoader(
             train_dataset,
             batch_size=args.batch_size,
             shuffle=True,
-            num_workers=4,
+            num_workers=args.num_workers,  # Reduced number of workers
             drop_last=True,
-            pin_memory=True  # Speeds up data transfer to GPU
+            pin_memory=args.pin_memory
         )
     except Exception as e:
-        print(f"Error loading training dataset: {e}")
+        logging.error(f"Error loading training dataset: {e}")
         return
     
     # Create validation dataset and dataloader if validation directory exists
@@ -555,50 +847,21 @@ def main():
                     val_dataset,
                     batch_size=args.val_batch_size,
                     shuffle=False,
-                    num_workers=4,
+                    num_workers=args.num_workers,  # Reduced number of workers
                     drop_last=False,
-                    pin_memory=True
+                    pin_memory=args.pin_memory
                 )
-                print(f"Validation set loaded with {len(val_dataset)} sequences")
+                logging.info(f"Validation set loaded with {len(val_dataset)} sequences")
             else:
-                print(f"Warning: No valid sequences found in validation directory {args.val_dir}")
+                logging.warning(f"Warning: No valid sequences found in validation directory {args.val_dir}")
         except Exception as e:
-            print(f"Error loading validation dataset: {e}")
+            logging.error(f"Error loading validation dataset: {e}")
             val_dataloader = None
     else:
-        print(f"Warning: Validation directory {args.val_dir} not found. Skipping validation.")
+        logging.warning(f"Warning: Validation directory {args.val_dir} not found. Skipping validation.")
     
     # Log dataset information
     wandb.log({"dataset_size": len(train_dataset)})
-    
-    # Load model using the utility function
-    try:
-        print(f"Loading model from {args.pretrained_path}")
-        model = load_pretrained_vae(
-            model_class=OpenSoraVAE_V1_3,
-            pretrained_path=args.pretrained_path,
-            micro_frame_size=args.micro_frame_size,  # Use the specified micro_frame_size
-            normalization="video"
-        )
-        model = model.to(device)
-        
-        # Get model's dtype and display frame size info
-        model_dtype = get_model_dtype(model)
-        print(f"Model is using dtype: {model_dtype}")
-        
-        if hasattr(model, "micro_frame_size"):
-            print(f"Model micro_frame_size: {model.micro_frame_size}")
-            # Ensure sequence length is a multiple of micro_frame_size
-            if args.sequence_length % model.micro_frame_size != 0:
-                print(f"Warning: sequence_length ({args.sequence_length}) is not a multiple of micro_frame_size ({model.micro_frame_size})")
-                print(f"This may cause issues during training. Consider adjusting sequence_length.")
-        
-    except Exception as e:
-        print(f"Error loading model: {e}")
-        return
-    
-    # Log model architecture summary
-    wandb.watch(model, log_freq=100)
     
     # Optimizer
     optimizer = Adam(model.parameters(), lr=args.lr)
@@ -627,15 +890,20 @@ def main():
             validate_interval=args.validate_interval,
             log_interval=args.log_interval,
             patience=args.early_stopping,
-            scheduler=scheduler
+            scheduler=scheduler,
+            gradient_accumulation_steps=args.gradient_accumulation_steps,
+            amp_dtype=amp_dtype,
+            max_grad_norm=args.max_grad_norm
         )
     except Exception as e:
-        print(f"Error during training: {e}")
+        logging.error(f"Error during training: {e}")
     finally:
         # Finish wandb run
         wandb.finish()
     
-    print(f"Fine-tuning complete. Model saved to {args.output_dir}")
+    logging.info(f"Fine-tuning complete. Model saved to {args.output_dir}")
 
 if __name__ == "__main__":
     main()
+    
+    runtime.terminate()

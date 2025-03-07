@@ -31,21 +31,28 @@ python Fine_tune/vae/finetune_vae.py \
     --pretrained_path "saved_models/opensora_vae_v1.3.safetensors" \
     --output_dir "${PROJECT_DIR}/checkpoint" \
     --sequence_length 16 \
-    --image_size 160 \
+    --image_size 240 \
     --batch_size 1 \
     --epochs 50 \
     --lr 1e-5 \
     --beta 0.001 \
-    --micro_frame_size 4 \
+    --micro_frame_size 2 \
     --wandb_project "sunspot-vae" \
     --run_name "finetune_vae_lower_res" \
     --save_interval 5 \
     --validate_interval 1 \
-    --log_interval 5 \
+    --log_interval 10 \
     --early_stopping 10 \
     --lr_patience 3 \
     --lr_factor 0.5 \
-    >& "${LOG_DIR}/fine-tune.log"
+    --gradient_accumulation_steps 16 \
+    --use_amp \
+    --amp_dtype "bfloat16" \
+    --dtype "bfloat16" \
+    --max_grad_norm 1.0 \
+    --num_workers 0 \
+    --pin_memory \
+    --log_file "${LOG_DIR}/fine-tune.log"
 
 # Check if the training completed successfully
 if [ $? -eq 0 ]; then
