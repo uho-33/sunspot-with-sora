@@ -18,7 +18,7 @@ import re
 import gc
 
 # Add the project root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 # Get the absolute path of the "opensora" folder and add it to Python path
 opensora_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'origin_opensora'))
 sys.path.append(opensora_path)  # Add opensora_path to sys.path
@@ -158,6 +158,16 @@ def compute_kl_loss(model, result):
     
     return kl_loss
 
+def get_model_dtype(model):
+    """Detect the dtype used by the model parameters"""
+    model_dtype = None
+    for param in model.parameters():
+        if param.dtype in [torch.float32, torch.float16, torch.bfloat16]:
+            model_dtype = param.dtype
+            break
+    if model_dtype is None:
+        model_dtype = torch.float32
+    return model_dtype
 
 def validate_vae(model, val_loader, device, beta=0.01):
     """Evaluate the model on a validation set"""
@@ -166,12 +176,22 @@ def validate_vae(model, val_loader, device, beta=0.01):
     total_val_recon_loss = 0
     total_val_kl_loss = 0
     
+    # Detect the model's dtype
+    model_dtype = None
+    for param in model.parameters():
+        if param.dtype in [torch.float32, torch.float16, torch.bfloat16]:
+            model_dtype = param.dtype
+            break
+    if model_dtype is None:
+        model_dtype = torch.float32  # Default to float32 if can't determine
+    
     with torch.no_grad():  # No gradient computation during validation
         for batch in tqdm(val_loader, desc="Validating"):
-            batch = batch.to(device)
+            # Convert batch to model's dtype
+            batch = batch.to(device).to(model_dtype)
             
-            # Forward pass
-            result = model(batch)
+            # Forward pass - explicitly set is_training=False for validation
+            result = model(batch, is_training=False)
             
             # Extract needed values
             decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
@@ -231,6 +251,21 @@ def train_vae(
     # Create directories for saving models if they don't exist
     os.makedirs(save_path, exist_ok=True)
     
+    # Variable to track consecutive OOM errors
+    consecutive_oom_errors = 0
+    max_consecutive_oom_errors = 3  # Stop after this many consecutive OOM errors
+    
+    # Detect the model's dtype
+    model_dtype = None
+    for param in model.parameters():
+        if param.dtype in [torch.float32, torch.float16, torch.bfloat16]:
+            model_dtype = param.dtype
+            break
+    if model_dtype is None:
+        model_dtype = torch.float32  # Default to float32 if can't determine
+    
+    print(f"Training with model dtype: {model_dtype}")
+    
     for epoch in range(epochs):
         # Training loop
         total_loss = 0
@@ -238,15 +273,16 @@ def train_vae(
         total_kl_loss = 0
         pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
         
+        batch_count = 0
         for batch_idx, batch in enumerate(pbar):
             try:
-                # Move batch to device
-                batch = batch.to(device)  # [B, C, T, H, W]
+                # Move batch to device and convert to model's dtype
+                batch = batch.to(device).to(model_dtype)  # [B, C, T, H, W]
                 
                 optimizer.zero_grad()
                 
-                # Forward pass - matching OpenSoraVAE_V1_3 interface
-                result = model(batch)
+                # Forward pass - explicitly set is_training=True for training
+                result = model(batch, is_training=True)
                 
                 # Extract needed values based on model's actual return format
                 decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
@@ -268,6 +304,7 @@ def train_vae(
                 total_loss += loss.item()
                 total_recon_loss += recon_loss.item()
                 total_kl_loss += kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss
+                batch_count += 1
                 
                 kl_value = kl_loss.item() if isinstance(kl_loss, torch.Tensor) else kl_loss
                 pbar.set_description(f"Epoch {epoch+1}, Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_value:.6f}")
@@ -289,19 +326,55 @@ def train_vae(
                         frame_idx = 0
                         
                         # Convert from [-1,1] to [0,1] range for visualization
-                        orig_img = (batch[sample_idx, :, frame_idx].cpu().permute(1, 2, 0) + 1) / 2
-                        recon_img = (decoded[sample_idx, :, frame_idx].detach().cpu().permute(1, 2, 0) + 1) / 2
+                        orig_img = (batch[sample_idx, :, frame_idx].cpu().to(torch.float32).permute(1, 2, 0) + 1) / 2
+                        recon_img = (decoded[sample_idx, :, frame_idx].detach().cpu().to(torch.float32).permute(1, 2, 0) + 1) / 2
                         
                         wandb.log({
                             "original": wandb.Image(orig_img.numpy()),
                             "reconstruction": wandb.Image(recon_img.numpy())
                         })
                 
+                # Reset OOM counter on successful iteration
+                consecutive_oom_errors = 0
+                
                 # Free up memory
                 del batch, result, decoded, loss, recon_loss, kl_loss
             
+            except torch.cuda.OutOfMemoryError as e:
+                # Handle CUDA out of memory errors
+                consecutive_oom_errors += 1
+                print(f"CUDA Out of Memory Error ({consecutive_oom_errors}/{max_consecutive_oom_errors}): {e}")
+                
+                # Try to free memory
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                gc.collect()
+                
+                # Automatically save the model if we've trained for at least one full epoch
+                if epoch > 0:
+                    emergency_ckpt_path = os.path.join(save_path, f"vae_emergency_epoch_{epoch}_batch_{batch_idx}.pt")
+                    torch.save({
+                        'epoch': epoch,
+                        'batch_idx': batch_idx,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
+                    }, emergency_ckpt_path)
+                    print(f"Emergency checkpoint saved to {emergency_ckpt_path}")
+                
+                # Stop training if too many consecutive OOM errors
+                if consecutive_oom_errors >= max_consecutive_oom_errors:
+                    print(f"Training stopped due to {consecutive_oom_errors} consecutive CUDA Out of Memory errors.")
+                    wandb.log({"training_stopped_reason": "CUDA OOM"})
+                    wandb.finish()
+                    return
+                
+                # Skip this batch
+                continue
+                
             except Exception as e:
                 print(f"Error in training batch {batch_idx}: {e}")
+                # Continue with next batch for other types of errors
                 continue
         
         # Manual garbage collection
@@ -309,10 +382,17 @@ def train_vae(
             torch.cuda.empty_cache()
         gc.collect()
         
+        # Skip the rest of the epoch if no batches were successfully processed
+        if batch_count == 0:
+            print(f"No batches were successfully processed in epoch {epoch+1}. Stopping training.")
+            wandb.log({"training_stopped_reason": "No successful batches"})
+            wandb.finish()
+            return
+        
         # Calculate training metrics
-        avg_loss = total_loss / len(train_loader)
-        avg_recon_loss = total_recon_loss / len(train_loader)
-        avg_kl_loss = total_kl_loss / len(train_loader)
+        avg_loss = total_loss / batch_count
+        avg_recon_loss = total_recon_loss / batch_count
+        avg_kl_loss = total_kl_loss / batch_count
         
         # Log epoch metrics
         wandb.log({
@@ -370,6 +450,12 @@ def train_vae(
                     print(f"Early stopping triggered after {epoch+1} epochs")
                     break
             
+            except torch.cuda.OutOfMemoryError:
+                print("CUDA Out of Memory during validation. Skipping validation for this epoch.")
+                # Try to free memory
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                gc.collect()
             except Exception as e:
                 print(f"Error during validation: {e}")
                 # Continue with training even if validation fails
@@ -410,6 +496,8 @@ def main():
     parser.add_argument('--early_stopping', type=int, default=10, help='Early stopping patience (epochs)')
     parser.add_argument('--lr_patience', type=int, default=3, help='Learning rate scheduler patience (epochs)')
     parser.add_argument('--lr_factor', type=float, default=0.5, help='Learning rate reduction factor')
+    parser.add_argument('--micro_frame_size', type=int, default=2, 
+                       help='Micro frame size for VAE model (default is 5 for OpenSoraVAE)')
     args = parser.parse_args()
     
     if args.validate_interval is None:
@@ -489,10 +577,22 @@ def main():
         model = load_pretrained_vae(
             model_class=OpenSoraVAE_V1_3,
             pretrained_path=args.pretrained_path,
-            micro_frame_size=None,  # Let the model handle all frames at once if possible
+            micro_frame_size=args.micro_frame_size,  # Use the specified micro_frame_size
             normalization="video"
         )
         model = model.to(device)
+        
+        # Get model's dtype and display frame size info
+        model_dtype = get_model_dtype(model)
+        print(f"Model is using dtype: {model_dtype}")
+        
+        if hasattr(model, "micro_frame_size"):
+            print(f"Model micro_frame_size: {model.micro_frame_size}")
+            # Ensure sequence length is a multiple of micro_frame_size
+            if args.sequence_length % model.micro_frame_size != 0:
+                print(f"Warning: sequence_length ({args.sequence_length}) is not a multiple of micro_frame_size ({model.micro_frame_size})")
+                print(f"This may cause issues during training. Consider adjusting sequence_length.")
+        
     except Exception as e:
         print(f"Error loading model: {e}")
         return

@@ -7,4 +7,11 @@ python Fine_tune/vae/construct_dataset.py --source_dir "data\processed\validatio
 # Fine tune
 
 ## VAE
-python Fine_tune/vae/finetune_vae.py --data_dir "dataset/training/time-series/L16-S8" --val_dir "data/processed/validation/figure/figure-downsample/360p" --pretrained_path "https://huggingface.co/hpcai-tech/OpenSora-VAE-v1.3" --output_dir "./checkpoint" --sequence_length 16 --image_size 480 --run_name "test-finetune_vae"
+python Fine_tune/vae/finetune_vae.py --data_dir "/content/dataset/training/time-series/360p/L16-S8" --val_dir "/content/dataset/validation/time-series/360p/L16-S8" --pretrained_path "https://huggingface.co/hpcai-tech/OpenSora-VAE-v1.3" --output_dir "./checkpoint" --sequence_length 16 --image_size 480 --run_name "test-finetune_vae"
+
+
+# Init
+mkdir /content/dataset
+cp ../dataset/VAE-sunspot-with-sora.zip /content/
+unzip /content/VAE-sunspot-with-sora.zip -d /content/
+pip install -r requirements.txt

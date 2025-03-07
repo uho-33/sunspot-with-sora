@@ -31,6 +31,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+src/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -208,3 +209,10 @@ tools/caption/pllava_dir/PLLaVA/
 vbench
 !eval/vbench
 vbench2_beta_i2v
+
+checkpoint/
+backup/
+log/
+src/
+saved_models/
+venv/

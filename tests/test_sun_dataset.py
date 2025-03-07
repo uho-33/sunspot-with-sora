@@ -17,7 +17,7 @@ opensora_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'o
 sys.path.insert(0, opensora_path)
 
 # Import the dataset class
-from Fine_tune.vae.finetune_vae import SunObservationDataset
+from backup.finetune_vae import SunObservationDataset
 
 class TestSunObservationDataset:
     

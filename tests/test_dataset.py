@@ -8,7 +8,7 @@ from torchvision import transforms
 # Import the dataset class
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Fine_tune.vae.finetune_vae import SunObservationDataset
+from backup.finetune_vae import SunObservationDataset
 
 class TestSunObservationDataset(unittest.TestCase):
     def setUp(self):
