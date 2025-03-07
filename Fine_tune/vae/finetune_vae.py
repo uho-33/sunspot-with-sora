@@ -17,10 +17,7 @@ from torchvision import transforms
 import sys
 import re
 import gc
-import logging
-import io
-from contextlib import redirect_stdout, redirect_stderr
-from google.colab import runtime
+
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -36,54 +33,6 @@ from opensora.utils.misc import to_torch_dtype
 
 # Set environment variables to avoid fragmentation in CUDA memory
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
-
-# Custom TQDM that writes to terminal instead of stdout
-class TqdmToTerminal(io.StringIO):
-    def __init__(self):
-        super().__init__()
-        self.terminal = sys.stdout
-        self.output = ""
-
-    def write(self, buf):
-        self.output = buf.strip('\r\n\t ')
-        self.terminal.write(buf)
-        self.terminal.flush()
-
-    def flush(self):
-        self.terminal.flush()
-
-# Configure logger
-def setup_logger(log_file=None, level=logging.INFO):
-    """Set up logger to write to file and terminal"""
-    # Root logger configuration
-    logger = logging.getLogger()
-    logger.setLevel(level)
-    
-    # Clear any existing handlers
-    for handler in logger.handlers[:]:
-        logger.removeHandler(handler)
-    
-    # Create formatter
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    
-    # Add file handler if log file is specified
-    if log_file:
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-    
-    # Add stream handler for console output
-    console_handler = logging.StreamHandler(stream=sys.stdout)
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-    
-    return logger
-
-# Custom print function to ensure logging
-def safe_print(*args, **kwargs):
-    """Print function that ensures content goes to logs"""
-    msg = " ".join(str(arg) for arg in args)
-    logging.info(msg)
 
 class SunObservationDataset(Dataset):
     """
@@ -123,11 +72,11 @@ class SunObservationDataset(Dataset):
                     if len(image_files) >= sequence_length:
                         self.sequence_dirs.append(path)
         except Exception as e:
-            logging.error(f"Error reading directory {root_dir}: {e}")
+            print(f"Error reading directory {root_dir}: {e}")
             self.sequence_dirs = []
         
         # For debugging
-        logging.info(f"Found {len(self.sequence_dirs)} valid sequence directories")
+        print(f"Found {len(self.sequence_dirs)} valid sequence directories")
         
         # Get all image paths for quick access in __getitem__
         self.image_paths = []
@@ -251,7 +200,7 @@ def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
     # Get model dtype for type conversion
     model_dtype = get_model_dtype(model)
     
-    logging.info(f"Starting validation on {len(val_loader)} batches")
+    print(f"Starting validation on {len(val_loader)} batches")
     
     with torch.no_grad():  # No gradient computation during validation
         for batch_idx, batch in enumerate(val_loader):
@@ -261,7 +210,7 @@ def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
                 
             # Log progress periodically instead of using tqdm
             if batch_idx % 10 == 0:
-                logging.info(f"Validating batch {batch_idx}/{len(val_loader)}")
+                print(f"Validating batch {batch_idx}/{len(val_loader)}")
                 
             # Move batch to CPU first, then to device and convert to model's dtype
             batch = batch.to(device).to(model_dtype)
@@ -349,7 +298,7 @@ def train_vae(
     
     # Get model dtype for type conversion
     model_dtype = get_model_dtype(model)
-    logging.info(f"Training with model dtype: {model_dtype}")
+    print(f"Training with model dtype: {model_dtype}")
     
     # Create directories for saving models if they don't exist
     os.makedirs(save_path, exist_ok=True)
@@ -370,10 +319,7 @@ def train_vae(
         total_loss = 0
         total_recon_loss = 0
         total_kl_loss = 0
-        
-        # Configure tqdm to write directly to terminal
-        tqdm_out = TqdmToTerminal()
-        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}", file=tqdm_out)
+        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
         
         # Reset optimizer gradients at the beginning of each epoch
         optimizer.zero_grad()
@@ -390,11 +336,11 @@ def train_vae(
                 # Debug output for batch shape
                 orig_shape = batch.shape
                 if batch.shape[1] != 3 or batch.shape[2] != model.micro_frame_size * (batch.shape[2] // model.micro_frame_size):
-                    logging.warning(f"Warning: Input batch shape {batch.shape} may not be compatible with model's micro_frame_size {model.micro_frame_size}")
+                    print(f"Warning: Input batch shape {batch.shape} may not be compatible with model's micro_frame_size {model.micro_frame_size}")
                     # Ensure sequence length is a multiple of micro_frame_size by truncating
                     new_seq_len = (batch.shape[2] // model.micro_frame_size) * model.micro_frame_size
                     if new_seq_len < batch.shape[2]:
-                        logging.warning(f"Truncating sequence length from {batch.shape[2]} to {new_seq_len}")
+                        print(f"Truncating sequence length from {batch.shape[2]} to {new_seq_len}")
                         batch = batch[:, :, :new_seq_len]
                 
                 # Move batch to device and convert to model's dtype
@@ -411,13 +357,13 @@ def train_vae(
                         
                         # Verify decoded shape matches input shape
                         if decoded.shape != batch.shape:
-                            logging.info(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
+                            print(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
                             # If only time dimension differs, this is likely due to padding in the VAE
                             # Try to crop the longer one to match the shorter one
                             min_time = min(decoded.shape[2], batch.shape[2])
                             decoded = decoded[:, :, :min_time]
                             batch = batch[:, :, :min_time]
-                            logging.info(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+                            print(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
                         
                         # Compute reconstruction loss
                         recon_loss = F.mse_loss(decoded, batch)
@@ -454,13 +400,13 @@ def train_vae(
                     
                     # Verify decoded shape matches input shape
                     if decoded.shape != batch.shape:
-                        logging.info(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
+                        print(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
                         # If only time dimension differs, this is likely due to padding in the VAE
                         # Try to crop the longer one to match the shorter one
                         min_time = min(decoded.shape[2], batch.shape[2])
                         decoded = decoded[:, :, :min_time]
                         batch = batch[:, :, :min_time]
-                        logging.info(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+                        print(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
                     
                     # Compute reconstruction loss
                     recon_loss = F.mse_loss(decoded, batch)
@@ -542,7 +488,7 @@ def train_vae(
             
             except torch.cuda.OutOfMemoryError as e:
                 # Handle CUDA OOM errors
-                logging.error(f"CUDA Out of Memory Error ({oom_errors+1}/{max_oom_errors}): {e}")
+                print(f"CUDA Out of Memory Error ({oom_errors+1}/{max_oom_errors}): {e}")
                 oom_errors += 1
                 
                 # Free up memory and skip this batch
@@ -560,9 +506,9 @@ def train_vae(
                             'model_state_dict': model.state_dict(),
                             'optimizer_state_dict': optimizer.state_dict(),
                         }, save_path_interrupted)
-                        logging.info(f"Interrupted model state saved to {save_path_interrupted}")
+                        print(f"Interrupted model state saved to {save_path_interrupted}")
                     except Exception as save_err:
-                        logging.error(f"Could not save interrupted model: {save_err}")
+                        print(f"Could not save interrupted model: {save_err}")
                     
                     return  # Exit the training function
                 
@@ -570,7 +516,7 @@ def train_vae(
                 optimizer.zero_grad()
             
             except Exception as e:
-                logging.error(f"Error in training batch {batch_idx}: {e}")
+                print(f"Error in training batch {batch_idx}: {e}")
                 # Make sure to zero out gradients in case of error to avoid accumulation
                 optimizer.zero_grad()
                 # Try to reclaim CUDA memory
@@ -630,20 +576,20 @@ def train_vae(
                         'loss': best_val_loss,
                         'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
                     }, best_model_path)
-                    logging.info(f"New best model saved to {best_model_path}")
+                    print(f"New best model saved to {best_model_path}")
                     wandb.run.summary["best_val_loss"] = best_val_loss
                     wandb.run.summary["best_epoch"] = epoch + 1
                 else:
                     epochs_without_improvement += 1
-                    logging.info(f"No improvement for {epochs_without_improvement} epochs")
+                    print(f"No improvement for {epochs_without_improvement} epochs")
                     
                 # Early stopping
                 if epochs_without_improvement >= patience:
-                    logging.info(f"Early stopping triggered after {epoch+1} epochs")
+                    print(f"Early stopping triggered after {epoch+1} epochs")
                     break
             
             except Exception as e:
-                logging.error(f"Error during validation: {e}")
+                print(f"Error during validation: {e}")
                 # Continue with training even if validation fails
         
         
@@ -666,7 +612,7 @@ def train_vae(
                 'loss': avg_loss,
                 'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
             }, ckpt_path)
-            logging.info(f"Checkpoint saved to {ckpt_path}")
+            print(f"Checkpoint saved to {ckpt_path}")
             # Log model to wandb
             wandb.save(ckpt_path)
     
@@ -678,7 +624,7 @@ def train_vae(
     total_time_formatted = str(timedelta(seconds=int(total_training_time)))
     
     # Log final timing info
-    logging.info(f"\nTraining completed in {total_time_formatted}")
+    print(f"\nTraining completed in {total_time_formatted}")
     
     
     # Log final timing to wandb
@@ -718,8 +664,6 @@ def main():
                        help='Maximum gradient norm for gradient clipping')
     parser.add_argument('--num_workers', type=int, default=2, help='Number of dataloader workers')
     parser.add_argument('--pin_memory', action='store_true', help='Use pinned memory for dataloaders')
-    parser.add_argument('--log_file', type=str, default=None, 
-                        help='Path to log file. If not provided, logs only to console')
     
     args = parser.parse_args()
     
@@ -727,13 +671,6 @@ def main():
     if args.validate_interval is None:
         args.validate_interval = args.save_interval
         
-    # Setup logging
-    setup_logger(args.log_file)
-    
-    # Replace built-in print with our logging version in some key functions
-    # This helps ensure consistent logging
-    __builtins__['print'] = safe_print
-    
     # Set device for training
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
@@ -757,7 +694,7 @@ def main():
     
     # Load model using the utility function
     try:
-        logging.info(f"Loading model from {args.pretrained_path}")
+        print(f"Loading model from {args.pretrained_path}")
         
         # Force CPU loading initially to save GPU memory 
         cpu_device = torch.device('cpu')
@@ -770,34 +707,34 @@ def main():
         
         # Get model's dtype
         model_dtype = get_model_dtype(model)
-        logging.info(f"Model is using dtype: {model_dtype}")
+        print(f"Model is using dtype: {model_dtype}")
         
         # Override model dtype if specified
         if args.dtype:
             try:
                 target_dtype = to_torch_dtype(args.dtype)
                 if target_dtype != model_dtype:
-                    logging.info(f"Converting model from {model_dtype} to {target_dtype}")
+                    print(f"Converting model from {model_dtype} to {target_dtype}")
                     model = model.to(target_dtype)
                     model_dtype = target_dtype
             except (ValueError, TypeError) as e:
-                logging.error(f"Error converting model to {args.dtype}: {e}")
-                logging.info("Continuing with model's original dtype")
+                print(f"Error converting model to {args.dtype}: {e}")
+                print("Continuing with model's original dtype")
         
         if hasattr(model, "micro_frame_size"):
-            logging.info(f"Model micro_frame_size: {model.micro_frame_size}")
+            print(f"Model micro_frame_size: {model.micro_frame_size}")
             # Ensure sequence length is a multiple of micro_frame_size
             if args.sequence_length % model.micro_frame_size != 0:
                 new_sequence_length = (args.sequence_length // model.micro_frame_size) * model.micro_frame_size
-                logging.warning(f"Warning: sequence_length ({args.sequence_length}) is not a multiple of micro_frame_size ({model.micro_frame_size})")
-                logging.info(f"Adjusting sequence_length from {args.sequence_length} to {new_sequence_length}")
+                print(f"Warning: sequence_length ({args.sequence_length}) is not a multiple of micro_frame_size ({model.micro_frame_size})")
+                print(f"Adjusting sequence_length from {args.sequence_length} to {new_sequence_length}")
                 args.sequence_length = new_sequence_length
         
         # Move to device after we know the dtype
         model = model.to(device)
         
     except Exception as e:
-        logging.error(f"Error loading model: {e}")
+        print(f"Error loading model: {e}")
         return
     
     # Log model architecture summary
@@ -818,7 +755,7 @@ def main():
             transform=transform
         )
         if len(train_dataset) == 0:
-            logging.error(f"Error: No valid sequences found in {args.data_dir}")
+            print(f"Error: No valid sequences found in {args.data_dir}")
             return
             
         train_dataloader = DataLoader(
@@ -830,7 +767,7 @@ def main():
             pin_memory=args.pin_memory
         )
     except Exception as e:
-        logging.error(f"Error loading training dataset: {e}")
+        print(f"Error loading training dataset: {e}")
         return
     
     # Create validation dataset and dataloader if validation directory exists
@@ -851,14 +788,14 @@ def main():
                     drop_last=False,
                     pin_memory=args.pin_memory
                 )
-                logging.info(f"Validation set loaded with {len(val_dataset)} sequences")
+                print(f"Validation set loaded with {len(val_dataset)} sequences")
             else:
-                logging.warning(f"Warning: No valid sequences found in validation directory {args.val_dir}")
+                print(f"Warning: No valid sequences found in validation directory {args.val_dir}")
         except Exception as e:
-            logging.error(f"Error loading validation dataset: {e}")
+            print(f"Error loading validation dataset: {e}")
             val_dataloader = None
     else:
-        logging.warning(f"Warning: Validation directory {args.val_dir} not found. Skipping validation.")
+        print(f"Warning: Validation directory {args.val_dir} not found. Skipping validation.")
     
     # Log dataset information
     wandb.log({"dataset_size": len(train_dataset)})
@@ -896,14 +833,15 @@ def main():
             max_grad_norm=args.max_grad_norm
         )
     except Exception as e:
-        logging.error(f"Error during training: {e}")
+        print(f"Error during training: {e}")
     finally:
         # Finish wandb run
         wandb.finish()
     
-    logging.info(f"Fine-tuning complete. Model saved to {args.output_dir}")
+    print(f"Fine-tuning complete. Model saved to {args.output_dir}")
 
 if __name__ == "__main__":
     main()
     
-    runtime.terminate()
+    from google.colab import runtime
+    runtime.unassign()

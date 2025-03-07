@@ -38,7 +38,7 @@ python Fine_tune/vae/finetune_vae.py \
     --beta 0.001 \
     --micro_frame_size 2 \
     --wandb_project "sunspot-vae" \
-    --run_name "finetune_vae_lower_res" \
+    --run_name "finetune_vae_lower_res_1" \
     --save_interval 5 \
     --validate_interval 1 \
     --log_interval 10 \
@@ -52,7 +52,7 @@ python Fine_tune/vae/finetune_vae.py \
     --max_grad_norm 1.0 \
     --num_workers 0 \
     --pin_memory \
-    --log_file "${LOG_DIR}/fine-tune.log"
+    >& "${LOG_DIR}/fine-tune.log"
 
 # Check if the training completed successfully
 if [ $? -eq 0 ]; then
