@@ -702,7 +702,9 @@ def main():
             model_class=OpenSoraVAE_V1_3,
             pretrained_path=args.pretrained_path,
             micro_frame_size=args.micro_frame_size,
-            normalization="video"
+            normalization="video",
+            strict=True,
+            verbose=False
         )
         
         # Get model's dtype
