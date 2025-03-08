@@ -29,38 +29,6 @@ if [ ! -d "${DATA_DIR}/validation/time-series/360p/L16-S8" ]; then
     echo "Warning: Validation data directory not found"
 fi
 
-# Find the latest checkpoint
-LATEST_CHECKPOINT=""
-if [ -d "${CHECKPOINT_DIR}" ]; then
-    # Look for files matching vae_epoch_*.pt and find the most recent one by epoch number
-    LATEST_CHECKPOINT=$(find "${CHECKPOINT_DIR}" -name "vae_epoch_*.pt" | sort -V | tail -n 1)
-    
-    # If best model exists and no epoch checkpoints found, use the best model
-    if [ -z "${LATEST_CHECKPOINT}" ] && [ -f "${CHECKPOINT_DIR}/vae_best_model.pt" ]; then
-        LATEST_CHECKPOINT="${CHECKPOINT_DIR}/vae_best_model.pt"
-    fi
-    
-    # If a checkpoint was found
-    if [ -n "${LATEST_CHECKPOINT}" ]; then
-        echo "Found latest checkpoint: ${LATEST_CHECKPOINT}"
-    else
-        echo "No existing checkpoints found. Will start from scratch."
-    fi
-fi
-
-RESUME_ARG=""
-if [ -n "${LATEST_CHECKPOINT}" ]; then
-    RESUME_ARG="--resume_checkpoint ${LATEST_CHECKPOINT}"
-fi
-
-# Set the pretrained_path argument based on whether we found a checkpoint
-PRETRAINED_ARG=""
-if [ -n "${LATEST_CHECKPOINT}" ]; then
-    PRETRAINED_ARG="--pretrained_path ${LATEST_CHECKPOINT}"
-fi
-
-# Set environment variable to enable expandable segments
-# This helps with GPU memory fragmentation issues
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # Run the training script with the latest checkpoint
@@ -68,7 +36,7 @@ echo "Starting training at $(date)"
 python Fine_tune/vae/finetune_vae.py \
     --data_dir "${DATA_DIR}/training/time-series/360p/L16-S8" \
     --val_dir "${DATA_DIR}/validation/time-series/360p/L16-S8" \
-    ${RESUME_ARG} \
+    --pretrained_path "saved_models/opensora_vae_v1.3.safetensors"\
     --output_dir "${CHECKPOINT_DIR}" \
     --sequence_length 16 \
     --image_size 240 \

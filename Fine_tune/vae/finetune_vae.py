@@ -179,6 +179,17 @@ def compute_kl_loss(model, result):
     
     return kl_loss
 
+def solve_batch_size_mismatch(decoded, batch):
+    if decoded.shape != batch.shape:
+        print(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
+        # If only time dimension differs, this is likely due to padding in the VAE
+        # Try to crop the longer one to match the shorter one
+        min_time = min(decoded.shape[2], batch.shape[2])
+        decoded = decoded[:, :, :min_time]
+        batch = batch[:, :, :min_time]
+        print(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+    return decoded, batch
+
 def get_model_dtype(model):
     """Detect the dtype used by the model parameters"""
     model_dtype = None
@@ -214,6 +225,8 @@ def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
                 
             # Move batch to CPU first, then to device and convert to model's dtype
             batch = batch.to(device).to(model_dtype)
+            # Verify decoded shape matches input shape
+            
             
             # Use automatic mixed precision for validation if specified
             if amp_dtype is not None:
@@ -224,6 +237,8 @@ def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
                     # Extract needed values
                     decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
                     
+                    decoded, batch = solve_batch_size_mismatch(decoded, batch)
+
                     # Compute reconstruction loss
                     recon_loss = F.mse_loss(decoded, batch)
                     
@@ -289,7 +304,8 @@ def train_vae(
     gradient_accumulation_steps=1,
     amp_dtype=None,
     max_grad_norm=1.0,
-    
+    start_epoch=0,    # added parameter for resuming training
+    scaler_state=None # added parameter to load scaler state if available
 ):
     """Train the VAE model with validation and memory optimization"""
     model.train()
@@ -305,6 +321,8 @@ def train_vae(
     
     # Initialize scaler for mixed precision training if using PyTorch AMP
     scaler = torch.cuda.amp.GradScaler() if amp_dtype is not None and device.type == 'cuda' else None
+    if scaler is not None and scaler_state is not None:
+        scaler.load_state_dict(scaler_state)
     
     # Track consecutive OOM errors
     oom_errors = 0
@@ -312,7 +330,8 @@ def train_vae(
     
     training_start_time = time.time()
     
-    for epoch in range(epochs):
+# Use start_epoch to continue from the correct pointoch, epochs):
+    for epoch in range(start_epoch, epochs):  # modified epoch loop to resume from start_epoch
         
         
         # Training loop
@@ -356,14 +375,7 @@ def train_vae(
                         decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
                         
                         # Verify decoded shape matches input shape
-                        if decoded.shape != batch.shape:
-                            print(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
-                            # If only time dimension differs, this is likely due to padding in the VAE
-                            # Try to crop the longer one to match the shorter one
-                            min_time = min(decoded.shape[2], batch.shape[2])
-                            decoded = decoded[:, :, :min_time]
-                            batch = batch[:, :, :min_time]
-                            print(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+                        decoded, batch = solve_batch_size_mismatch(decoded, batch)
                         
                         # Compute reconstruction loss
                         recon_loss = F.mse_loss(decoded, batch)
@@ -382,13 +394,17 @@ def train_vae(
                     
                     # Step optimizer only after accumulating enough gradients
                     if (batch_idx + 1) % gradient_accumulation_steps == 0:
-                        # Clip gradients to prevent exploding gradients
-                        scaler.unscale_(optimizer)
-                        torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
-                        
-                        # Update parameters with gradient scaling
-                        scaler.step(optimizer)
-                        scaler.update()
+                        # MODIFIED: Skip unscaling for bfloat16 and apply clipping directly through the scaler
+                        if amp_dtype == torch.bfloat16:
+                            # For bfloat16, skip explicit unscaling and clipping
+                            scaler.step(optimizer)
+                            scaler.update()
+                        else:
+                            # For float16, do normal unscaling and clipping
+                            scaler.unscale_(optimizer)
+                            torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+                            scaler.step(optimizer)
+                            scaler.update()
                         optimizer.zero_grad()
                 else:
                     # Standard precision training
@@ -399,14 +415,7 @@ def train_vae(
                     decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
                     
                     # Verify decoded shape matches input shape
-                    if decoded.shape != batch.shape:
-                        print(f"Shape mismatch: input={batch.shape}, output={decoded.shape}")
-                        # If only time dimension differs, this is likely due to padding in the VAE
-                        # Try to crop the longer one to match the shorter one
-                        min_time = min(decoded.shape[2], batch.shape[2])
-                        decoded = decoded[:, :, :min_time]
-                        batch = batch[:, :, :min_time]
-                        print(f"Adjusted shapes: input={batch.shape}, output={decoded.shape}")
+                    decoded, batch = solve_batch_size_mismatch(decoded, batch)
                     
                     # Compute reconstruction loss
                     recon_loss = F.mse_loss(decoded, batch)
@@ -534,11 +543,6 @@ def train_vae(
         avg_recon_loss = total_recon_loss / len(train_loader)
         avg_kl_loss = total_kl_loss / len(train_loader)
         
-        # Calculate average batch time for this epoch
-        avg_epoch_batch_time = sum(epoch_batch_times) / len(epoch_batch_times) if epoch_batch_times else 0
-        
-        # Run validation if it's time
-        validation_start_time = time.time()
         validation_duration = 0
         
         if (epoch + 1) % validate_interval == 0 and val_loader is not None:
@@ -611,10 +615,17 @@ def train_vae(
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': avg_loss,
                 'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
+                'scaler_state_dict': scaler.state_dict() if scaler is not None else None
             }, ckpt_path)
             print(f"Checkpoint saved to {ckpt_path}")
             # Log model to wandb
-            wandb.save(ckpt_path)
+            checkpoint_artifact = wandb.Artifact(
+                name=f"checkpoint-epoch-{epoch+1}", 
+                type="model",
+                description=f"Model checkpoint from epoch {epoch+1}"
+            )
+    checkpoint_artifact.add_file(ckpt_path)
+    wandb.log_artifact(checkpoint_artifact)
     
     # Calculate and log final timing statistics
     training_end_time = time.time()
@@ -664,6 +675,7 @@ def main():
                        help='Maximum gradient norm for gradient clipping')
     parser.add_argument('--num_workers', type=int, default=2, help='Number of dataloader workers')
     parser.add_argument('--pin_memory', action='store_true', help='Use pinned memory for dataloaders')
+    parser.add_argument('--resume_checkpoint', type=str, default=None, help='Path to checkpoint to resume training from')
     
     args = parser.parse_args()
     
@@ -699,7 +711,7 @@ def main():
         # Force CPU loading initially to save GPU memory 
         cpu_device = torch.device('cpu')
         model = load_pretrained_vae(
-            model_class=OpenSoraVAE_V1_3,
+          model_class=OpenSoraVAE_V1_3,
             pretrained_path=args.pretrained_path,
             micro_frame_size=args.micro_frame_size,
             normalization="video",
@@ -814,6 +826,19 @@ def main():
         verbose=True
     )
     
+    start_epoch = 0
+    scaler_state = None  # added variable for scaler state
+    if args.resume_checkpoint is not None and os.path.isfile(args.resume_checkpoint):
+        ckpt = torch.load(args.resume_checkpoint, map_location=device)
+        print(f"Resuming training from checkpoint: {args.resume_checkpoint} at epoch {ckpt['epoch']+1}")
+        model.load_state_dict(ckpt['model_state_dict'])
+        optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+        if scheduler and ckpt.get('scheduler_state_dict'):
+            scheduler.load_state_dict(ckpt['scheduler_state_dict'])
+        if 'scaler_state_dict' in ckpt and ckpt['scaler_state_dict'] is not None:
+            scaler_state = ckpt['scaler_state_dict']
+        start_epoch = ckpt['epoch'] + 1
+    
     # Train
     try:
         train_vae(
@@ -832,7 +857,9 @@ def main():
             scheduler=scheduler,
             gradient_accumulation_steps=args.gradient_accumulation_steps,
             amp_dtype=amp_dtype,
-            max_grad_norm=args.max_grad_norm
+            max_grad_norm=args.max_grad_norm,
+            start_epoch=start_epoch,   # pass the resume epoch here
+            scaler_state=scaler_state  # pass the scaler's state if available
         )
     except Exception as e:
         print(f"Error during training: {e}")
