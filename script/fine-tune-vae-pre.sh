@@ -45,7 +45,7 @@ python Fine_tune/vae/finetune_vae.py \
     --lr 1e-5 \
     --beta 0.001 \
     --micro_frame_size 2 \
-    --wandb_project "sunspot-vae" \
+    --wandb_project "sunspot-vae-pre" \
     --run_name "finetune_vae_$(date +%Y%m%d_%H%M%S)" \
     --save_interval 5 \
     --validate_interval 1 \

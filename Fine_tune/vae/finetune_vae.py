@@ -168,14 +168,17 @@ class SunObservationDataset(Dataset):
 
 
 def compute_kl_loss(model, result):
-    """Helper function to compute KL divergence loss from model and result"""
+    """Properly compute KL divergence loss from model and result"""
     kl_loss = 0.0
     if hasattr(model, "kl_loss"):
         kl_loss = model.kl_loss
     elif isinstance(result, tuple) and len(result) > 2:
         posterior = result[2]
         if hasattr(posterior, "kl"):
-            kl_loss = posterior.kl().mean()
+            # Get raw KL values - returns shape [B] with sum over other dims
+            kl_values = posterior.kl()
+            # Normalize by batch size only, consistent with original implementation
+            kl_loss = torch.sum(kl_values) / kl_values.shape[0]
     
     return kl_loss
 
