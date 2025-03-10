@@ -168,7 +168,6 @@ class SunObservationDataset(Dataset):
 
 
 def compute_kl_loss(model, result):
-    """Properly compute KL divergence loss from model and result"""
     kl_loss = 0.0
     if hasattr(model, "kl_loss"):
         kl_loss = model.kl_loss
@@ -243,7 +242,7 @@ def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
                     decoded, batch = solve_batch_size_mismatch(decoded, batch)
 
                     # Compute reconstruction loss
-                    recon_loss = F.mse_loss(decoded, batch)
+                    recon_loss = torch.mean(torch.abs(decoded - batch))
                     
                     # Compute KL divergence
                     kl_loss = compute_kl_loss(model, result)
@@ -259,7 +258,7 @@ def validate_vae(model, val_loader, device, beta=0.01, amp_dtype=None):
                 decoded = result[1] if isinstance(result, tuple) and len(result) > 1 else result
                 
                 # Compute reconstruction loss
-                recon_loss = F.mse_loss(decoded, batch)
+                recon_loss = torch.mean(torch.abs(decoded - batch))
                 
                 # Compute KL divergence
                 kl_loss = compute_kl_loss(model, result)
@@ -381,7 +380,7 @@ def train_vae(
                         decoded, batch = solve_batch_size_mismatch(decoded, batch)
                         
                         # Compute reconstruction loss
-                        recon_loss = F.mse_loss(decoded, batch)
+                        recon_loss = torch.mean(torch.abs(decoded - batch))
                         
                         # Compute KL divergence using helper function
                         kl_loss = compute_kl_loss(model, result)
@@ -421,7 +420,7 @@ def train_vae(
                     decoded, batch = solve_batch_size_mismatch(decoded, batch)
                     
                     # Compute reconstruction loss
-                    recon_loss = F.mse_loss(decoded, batch)
+                    recon_loss = torch.mean(torch.abs(decoded - batch))
                     
                     # Compute KL divergence using helper function
                     kl_loss = compute_kl_loss(model, result)

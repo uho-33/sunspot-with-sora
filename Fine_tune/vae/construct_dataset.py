@@ -77,7 +77,7 @@ def main():
     parser.add_argument('--source_dir', type=str, default='data/processed/figure/figure-downsample/360p',
                         help='Directory containing source images')
     parser.add_argument('--target_dir', type=str, default=None,
-                        help='Directory to save the dataset. If not provided, will use "dataset/training/time-se/trainingries/Lse/trainingriesw_size}-S{stride}"')
+                        help='Directory to save the dataset. If not provided, will use "dataset/training/time-series/L{window_size}-S{stride}"')
     parser.add_argument('--window_size', type=int, default=16,
                         help='Number of consecutive frames in each data point')
     parser.add_argument('--stride', type=int, default=8,

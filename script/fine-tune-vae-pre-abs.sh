@@ -4,9 +4,9 @@
 BASE_DIR="/content"
 PROJECT_DIR="${BASE_DIR}/drive/MyDrive/projects/sunspot-with-sora"
 DATA_DIR="${BASE_DIR}/dataset"
-LOG_DIR="${PROJECT_DIR}/log"
-CHECKPOINT_DIR="${PROJECT_DIR}/checkpoint"
-LOG_FILE="${LOG_DIR}/fine-tune_$(date +%Y%m%d_%H%M%S).log"
+LOG_DIR="${PROJECT_DIR}/log/abs"
+CHECKPOINT_DIR="${PROJECT_DIR}/checkpoint/abs"
+LOG_FILE="${LOG_DIR}/fine-tune_abs_$(date +%Y%m%d_%H%M%S).log"
 
 # Create necessary directories
 mkdir -p "${LOG_DIR}"
@@ -47,11 +47,11 @@ python Fine_tune/vae/finetune_vae.py \
     --beta 1e-6 \
     --micro_frame_size 2 \
     --wandb_project "sunspot-vae-pre" \
-    --run_name "finetune_vae_$(date +%Y%m%d_%H%M%S)" \
+    --run_name "finetune_vae_abs_$(date +%Y%m%d_%H%M%S)" \
     --save_interval 5 \
     --validate_interval 1 \
     --log_interval 10 \
-    --early_stopping 10 \
+    --early_stopping 50 \
     --lr_patience 3 \
     --lr_factor 0.5 \
     --gradient_accumulation_steps 16 \
