@@ -383,3 +383,134 @@ class VideoClasssificationDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.data)
+
+
+@DATASETS.register_module()
+class SunObservationDataset(torch.utils.data.Dataset):
+    """Dataset for Sun observation sequences with brightness data as text.
+    
+    Args:
+        data_path (str, optional): Not used, kept for compatibility
+        num_frames (int): Number of frames to include in each sequence
+        frame_interval (int): Interval between frames (for compatibility)
+        image_size (tuple): Target size for images (height, width)
+        transform_name (str): Name of transform to apply
+        tokenize_fn (callable, optional): Function to tokenize text (brightness data)
+        time_series_dir (str): Directory containing time series image folders
+        brightness_dir (str): Directory containing brightness NPZ files
+    """
+    
+    def __init__(
+        self,
+        data_path=None,
+        num_frames=16,
+        frame_interval=1,
+        image_size=(256, 256),
+        transform_name="center",
+        tokenize_fn=None,
+        time_series_dir="dataset/training/time-series/360p/L16-S8/",
+        brightness_dir="dataset/training/brightness/L16-S8/",
+        return_path=False,
+    ):
+        self.time_series_dir = os.path.expanduser(time_series_dir)
+        self.brightness_dir = os.path.expanduser(brightness_dir)
+        self.num_frames = num_frames
+        self.frame_interval = frame_interval
+        self.image_size = image_size
+        self.transforms = {
+            "image": get_transforms_image(transform_name, image_size),
+            "video": get_transforms_video(transform_name, image_size),
+        }
+        self.tokenize_fn = tokenize_fn
+        self.return_path = return_path
+        
+        # Find all sequence directories that have corresponding brightness data
+        self.sequence_dirs = []
+        for folder_name in os.listdir(self.time_series_dir):
+            folder_path = os.path.join(self.time_series_dir, folder_name)
+            brightness_path = os.path.join(self.brightness_dir, f"{folder_name}.npz")
+            
+            if os.path.isdir(folder_path) and os.path.exists(brightness_path):
+                # Check if directory has enough images
+                image_files = sorted([f for f in os.listdir(folder_path) 
+                                     if f.lower().endswith(('.png', '.jpg', '.jpeg'))])
+                if len(image_files) >= num_frames:
+                    self.sequence_dirs.append(folder_name)
+        
+        print(f"Found {len(self.sequence_dirs)} valid sun observation sequences")
+
+    def getitem(self, index):
+        sequence_name = self.sequence_dirs[index]
+        sequence_path = os.path.join(self.time_series_dir, sequence_name)
+        brightness_path = os.path.join(self.brightness_dir, f"{sequence_name}.npz")
+        
+        # Load brightness data from NPZ file
+        brightness_data = np.load(brightness_path)['normalized_brightness']  # Assuming the key is 'brightness'
+        
+        # Load image frames
+        image_files = sorted([f for f in os.listdir(sequence_path) 
+                             if f.lower().endswith(('.png', '.jpg', '.jpeg'))])
+        
+        # Ensure we have enough frames
+        if len(image_files) < self.num_frames:
+            raise RuntimeError(f"Not enough frames in {sequence_path}: {len(image_files)} < {self.num_frames}")
+        
+        # Select frames with interval
+        selected_indices = range(0, min(len(image_files), self.num_frames * self.frame_interval), self.frame_interval)
+        selected_indices = selected_indices[:self.num_frames]  # Limit to num_frames
+        
+        frames = []
+        for idx in selected_indices:
+            img_path = os.path.join(sequence_path, image_files[idx])
+            image = pil_loader(img_path)
+            frames.append(image)
+        
+        # Apply transforms to create a video tensor
+        transform = self.transforms["video"]
+        video_frames = []
+        for frame in frames:
+            # Convert PIL image to tensor
+            frame_tensor = transforms.ToTensor()(frame)
+            video_frames.append(frame_tensor)
+        
+        video = torch.stack(video_frames)  # [T, C, H, W]
+        video = transform(video)  # Apply video transforms
+        
+        # TCHW -> CTHW (match VideoTextDataset format)
+        video = video.permute(1, 0, 2, 3)
+        
+        # Prepare brightness data as "text"
+        brightness_text = brightness_data  # This is a token. 
+        
+        # Create return dict similar to VideoTextDataset
+        ret = {
+            "video": video,
+            "num_frames": self.num_frames,
+            "height": self.image_size[0],
+            "width": self.image_size[1],
+            "ar": 1.0,
+            "fps": selected_indices,  # Using selected_indices as fps
+            "text": brightness_text,  # Brightness data as text
+        }
+        
+        # Apply tokenize function if provided
+        if self.tokenize_fn is not None:
+            ret.update({k: v.squeeze(0) for k, v in self.tokenize_fn(ret["text"]).items()})
+        
+        if self.return_path:
+            ret["path"] = sequence_path
+            
+        return ret
+
+    def __getitem__(self, index):
+        for _ in range(10):
+            try:
+                return self.getitem(index)
+            except Exception as e:
+                sequence_name = self.sequence_dirs[index]
+                print(f"Error loading sequence {sequence_name}: {e}")
+                index = np.random.randint(len(self))
+        raise RuntimeError("Too many bad data.")
+
+    def __len__(self):
+        return len(self.sequence_dirs)
