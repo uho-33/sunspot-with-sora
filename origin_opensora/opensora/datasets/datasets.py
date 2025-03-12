@@ -445,7 +445,7 @@ class SunObservationDataset(torch.utils.data.Dataset):
         brightness_path = os.path.join(self.brightness_dir, f"{sequence_name}.npz")
         
         # Load brightness data from NPZ file
-        brightness_data = np.load(brightness_path)['normalized_brightness']  # Assuming the key is 'brightness'
+        brightness_data = np.load(brightness_path)['data'] 
         
         # Load image frames
         image_files = sorted([f for f in os.listdir(sequence_path) 
@@ -490,7 +490,7 @@ class SunObservationDataset(torch.utils.data.Dataset):
             "width": self.image_size[1],
             "ar": 1.0,
             "fps": selected_indices,  # Using selected_indices as fps
-            "text": brightness_text,  # Brightness data as text
+            "text": brightness_data,  # Brightness data as text
         }
         
         # Apply tokenize function if provided

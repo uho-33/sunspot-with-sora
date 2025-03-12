@@ -11,3 +11,6 @@ One data is a token. Using a real or a high dimentonal vector as its embedding.
 
 Adv.:
 - In training, label free training can help model find connection among different time.
+
+Method:
+- Use Fourier Feature Embedding as embedder

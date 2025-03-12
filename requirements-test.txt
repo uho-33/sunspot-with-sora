@@ -1,0 +1,24 @@
+# Core dependencies
+
+colossalai
+torch>=2.0.0
+numpy>=1.22.0
+Pillow>=9.0.0
+torchvision>=0.15.0
+
+# Testing frameworks
+pytest>=7.3.1
+pytest-xdist>=3.3.1  # For parallel testing
+
+# Progress tracking
+tqdm>=4.64.0
+
+# Optional dependencies for visualization and data handling
+matplotlib>=3.7.0  # For plotting test results
+h5py>=3.8.0  # For reading HDF5 files
+
+# For OpenSora model registry
+mmengine>=0.7.3
+
+# For testing with real hardware
+pytest-benchmark>=4.0.0  # Optional: for performance testing
