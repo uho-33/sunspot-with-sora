@@ -54,7 +54,7 @@ class TestIntegrationWithOpenSora(unittest.TestCase):
         encoder = FourierFeatureEncoder(
             input_dim=1,
             mapping_size=256,
-            device="cpu"
+            device="cuda"
         )
         
         # Initialize the dataset

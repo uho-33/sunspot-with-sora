@@ -11,7 +11,7 @@ from torchvision.transforms import Compose, RandomHorizontalFlip
 from opensora.datasets.utils import video_transforms
 from opensora.registry import DATASETS
 
-from .read_video import read_video
+# from .read_video import read_video
 from .utils import VID_EXTENSIONS, get_transforms_image, get_transforms_video, read_file, temporal_random_crop
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -459,28 +459,25 @@ class SunObservationDataset(torch.utils.data.Dataset):
         selected_indices = range(0, min(len(image_files), self.num_frames * self.frame_interval), self.frame_interval)
         selected_indices = selected_indices[:self.num_frames]  # Limit to num_frames
         
+        # Load the images but keep them as PIL images
         frames = []
         for idx in selected_indices:
             img_path = os.path.join(sequence_path, image_files[idx])
             image = pil_loader(img_path)
             frames.append(image)
         
-        # Apply transforms to create a video tensor
-        transform = self.transforms["video"]
-        video_frames = []
-        for frame in frames:
-            # Convert PIL image to tensor
-            frame_tensor = transforms.ToTensor()(frame)
-            video_frames.append(frame_tensor)
+        # Convert frames to a torch in the format expected by video transforms
+        video_array = torch.from_numpy(np.stack([np.array(frame) for frame in frames]))  # [T, H, W, C]
         
-        video = torch.stack(video_frames)  # [T, C, H, W]
-        video = transform(video)  # Apply video transforms
+        # Transpose from [T, H, W, C] to [T, C, H, W] for compatibility with video transforms
+        video_array = video_array.permute(0, 3, 1, 2)  # [T, C, H, W]
+        
+        # Apply transforms - this handles conversion to tensor with the right dtype
+        transform = self.transforms["video"]
+        video = transform(video_array)  # Outputs [T, C, H, W] tensor
         
         # TCHW -> CTHW (match VideoTextDataset format)
         video = video.permute(1, 0, 2, 3)
-        
-        # Prepare brightness data as "text"
-        brightness_text = brightness_data  # This is a token. 
         
         # Create return dict similar to VideoTextDataset
         ret = {
@@ -489,13 +486,13 @@ class SunObservationDataset(torch.utils.data.Dataset):
             "height": self.image_size[0],
             "width": self.image_size[1],
             "ar": 1.0,
-            "fps": selected_indices,  # Using selected_indices as fps
+            "fps": 8,  # Using a standard fps value
             "text": brightness_data,  # Brightness data as text
         }
         
         # Apply tokenize function if provided
         if self.tokenize_fn is not None:
-            ret.update({k: v.squeeze(0) for k, v in self.tokenize_fn(ret["text"]).items()})
+            ret.update({k: v.squeeze(0) for k, v in self.tokenize_fn(brightness_data).items()})
         
         if self.return_path:
             ret["path"] = sequence_path

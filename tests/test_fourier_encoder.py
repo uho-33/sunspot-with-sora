@@ -22,7 +22,7 @@ class TestFourierFeatureEncoder(unittest.TestCase):
             mapping_size=128,
             max_period=10000,
             model_max_length=32,
-            device="cpu",  # Use CPU for testing
+            device="cuda",  # Use cuda for testing
             dtype=torch.float32
         )
         

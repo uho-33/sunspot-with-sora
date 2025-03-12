@@ -117,7 +117,7 @@ class TestSunObservationDataset(unittest.TestCase):
             input_dim=1,
             mapping_size=128,
             model_max_length=32,
-            device="cpu"
+            device="cuda"
         )
         
         # Set the tokenize function in the dataset
@@ -125,6 +125,8 @@ class TestSunObservationDataset(unittest.TestCase):
         
         # Get an item
         item = dataset[0]
+        item['input_ids'] = item['input_ids'].unsqueeze(0)
+        item['attention_mask'] = item['attention_mask'].unsqueeze(0)
         
         # Check that the tokenization worked
         self.assertIn('input_ids', item)
@@ -148,15 +150,8 @@ class TestIntegration(unittest.TestCase):
         base_dir = Path(os.getcwd())
         
         # Find the dataset directory
-        dataset_dir = None
-        for candidate in [
-            base_dir / "dataset",
-            base_dir / ".." / "dataset",
-            base_dir / "origin_opensora" / "dataset",
-        ]:
-            if candidate.exists():
-                dataset_dir = candidate
-                break
+        dataset_dir = Path("/content/dataset")
+        
         
         if dataset_dir is not None:
             time_series_dir = dataset_dir / "training" / "time-series" / "360p" / "L16-S8"
@@ -185,7 +180,7 @@ class TestIntegration(unittest.TestCase):
             input_dim=1,
             mapping_size=256,
             model_max_length=64,
-            device="cpu"
+            device="cuda"
         )
         
         # Set the tokenize function in the dataset
@@ -196,7 +191,7 @@ class TestIntegration(unittest.TestCase):
         
         if len(dataset) > 0:
             # Get the first item
-            item = dataset[0]
+            item = dataset
             
             # Check the basic structure
             self.assertIn('video', item)
