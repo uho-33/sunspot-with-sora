@@ -121,7 +121,7 @@ def construct_brightness_dataset(input_file, output_dir, window_size, stride, st
 def main():
     parser = argparse.ArgumentParser(description='Construct brightness dataset with sliding windows')
     parser.add_argument('--input_file', 
-                        default='data/processed/brightness/Ic_720s_normalize_dn_brightness_timeseries.npz',
+                        default='data/processed/brightness/filtered/filtered_brightness_timeseries.npz',
                         help='Path to input NPZ file containing brightness time series')
     parser.add_argument('--target_dir', 
                         default=None,
