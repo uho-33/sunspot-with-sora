@@ -74,10 +74,10 @@ def construct_time_series_dataset(source_dir, target_dir, window_size=16, stride
 
 def main():
     parser = argparse.ArgumentParser(description='Construct time series dataset for sun images')
-    parser.add_argument('--source_dir', type=str, default='data/processed/figure/figure-downsample/360p',
+    parser.add_argument('--source_dir', type=str, default='data/processed/figure/figure-downsample/360p_filtered',
                         help='Directory containing source images')
-    parser.add_argument('--target_dir', type=str, default=None,
-                        help='Directory to save the dataset. If not provided, will use "dataset/training/time-series/L{window_size}-S{stride}"')
+    parser.add_argument('--target_dir', type=str, default='dataset/training/figure',
+                        help='Directory to save the dataset. If not provided, will use "dataset/training/figure/L{window_size}-S{stride}"')
     parser.add_argument('--window_size', type=int, default=16,
                         help='Number of consecutive frames in each data point')
     parser.add_argument('--stride', type=int, default=8,
