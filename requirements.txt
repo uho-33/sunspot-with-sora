@@ -1,14 +1,16 @@
 # Core dependencies
 
-colossalai
+colossalai>=0.4.1
 torch==2.2.2 --index-url https://download.pytorch.org/whl/cu121
 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cu121
 xformers==0.0.25.post1 --index-url https://download.pytorch.org/whl/cu121
-torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+torchaudio
 numpy>=1.22.0
 Pillow>=9.0.0
 rotary_embedding_torch==0.5.3
 ftfy
+git+https://github.com/hpcaitech/TensorNVMe.git
+pandarallel
 
 # Testing frameworks
 pytest>=7.3.1

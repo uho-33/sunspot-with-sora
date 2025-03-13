@@ -25,7 +25,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from einops import rearrange
-from timm.models.layers import DropPath
+from timm.layers import DropPath
 from timm.models.vision_transformer import Mlp
 
 # from .builder import MODELS

@@ -3,7 +3,7 @@ import torch
 import torch.distributed as dist
 import torch.nn as nn
 from einops import rearrange
-from timm.models.layers import DropPath
+from timm.layers import DropPath
 from timm.models.vision_transformer import Mlp
 
 from opensora.acceleration.checkpoint import auto_grad_checkpoint

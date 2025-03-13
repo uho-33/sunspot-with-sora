@@ -8,7 +8,7 @@ from torch.distributed import ProcessGroup
 from torch.distributed.distributed_c10d import _get_default_group
 from torch.utils.data import DataLoader
 
-from .datasets import BatchFeatureDataset, VariableVideoTextDataset, VideoClasssificationDataset, VideoTextDataset
+from .datasets import BatchFeatureDataset, VariableVideoTextDataset, VideoClasssificationDataset, VideoTextDataset, SunObservationDataset
 from .sampler import BatchDistributedSampler, StatefulDistributedSampler, VariableVideoBatchSampler
 
 
@@ -63,7 +63,7 @@ def prepare_dataloader(
             ),
             batch_sampler,
         )
-    elif isinstance(dataset, VideoTextDataset) or isinstance(dataset, VideoClasssificationDataset):
+    elif isinstance(dataset, VideoTextDataset) or isinstance(dataset, VideoClasssificationDataset) or isinstance(dataset, SunObservationDataset):
         process_group = process_group or _get_default_group()
         sampler = StatefulDistributedSampler(
             dataset,

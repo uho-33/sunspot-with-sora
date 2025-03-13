@@ -18,26 +18,20 @@ from opensora.registry import MODELS
 class TestIntegrationWithOpenSora(unittest.TestCase):
     def setUp(self):
         # Check if real data exists
-        self.data_exists = False
+        
         base_dir = Path(os.getcwd())
         
-        # Find the dataset directory
-        for candidate in [
-            base_dir / "dataset",
-            base_dir / ".." / "dataset",
-            base_dir / "origin_opensora" / "dataset",
-        ]:
-            if candidate.exists():
-                self.dataset_dir = candidate
-                self.data_exists = True
-                break
+        self.dataset_dir = Path("/content/dataset")
+        self.data_exists = self.dataset_dir.exists()
                 
         if self.data_exists:
-            self.time_series_dir = self.dataset_dir / "training" / "time-series" / "360p" / "L16-S8"
+            self.time_series_dir = self.dataset_dir / "training" / "figure" / "360p" / "L16-S8"
             self.brightness_dir = self.dataset_dir / "training" / "brightness" / "L16-S8"
             
-            if not self.time_series_dir.exists() or not self.brightness_dir.exists():
-                self.data_exists = False
+            a = self.time_series_dir.exists()
+            b = self.brightness_dir.exists()
+            if self.time_series_dir.exists() and self.brightness_dir.exists():
+                self.data_exists = True
 
     def test_registry(self):
         """Test that the FourierFeatureEncoder is properly registered in OpenSora's MODELS registry."""
@@ -102,7 +96,7 @@ class TestIntegrationWithOpenSora(unittest.TestCase):
         encoder = FourierFeatureEncoder(
             input_dim=1,
             mapping_size=1024,  # Typical dimension for text encoders in STDiT
-            device="cpu"
+            device="cuda"
         )
         
         # Initialize the dataset
@@ -118,10 +112,13 @@ class TestIntegrationWithOpenSora(unittest.TestCase):
             self.skipTest("No data found in the dataset directories")
             
         # Get a sample
-        sample = dataset[0]
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=2)
+        batch = next(iter(dataloader))
+        input_ids = batch['input_ids']
+        attention_mask = batch['attention_mask']
         
         # Encode the sample
-        encoded = encoder.encode(sample['input_ids'], sample['attention_mask'])
+        encoded = encoder.encode(input_ids, attention_mask)
         
         # Check that the output has the expected format for STDiT
         # STDiT expects 'y' to be [B, 1, N_token, C]

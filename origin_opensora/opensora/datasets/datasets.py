@@ -405,10 +405,10 @@ class SunObservationDataset(torch.utils.data.Dataset):
         data_path=None,
         num_frames=16,
         frame_interval=1,
-        image_size=(256, 256),
+        image_size=(240, 240),
         transform_name="center",
         tokenize_fn=None,
-        time_series_dir="dataset/training/time-series/360p/L16-S8/",
+        time_series_dir="dataset/training/figure/360p/L16-S8/",
         brightness_dir="dataset/training/brightness/L16-S8/",
         return_path=False,
     ):
@@ -445,7 +445,7 @@ class SunObservationDataset(torch.utils.data.Dataset):
         brightness_path = os.path.join(self.brightness_dir, f"{sequence_name}.npz")
         
         # Load brightness data from NPZ file
-        brightness_data = np.load(brightness_path)['normalized_brightness']  # Assuming the key is 'brightness'
+        brightness_data = np.load(brightness_path)['data'] 
         
         # Load image frames
         image_files = sorted([f for f in os.listdir(sequence_path) 
