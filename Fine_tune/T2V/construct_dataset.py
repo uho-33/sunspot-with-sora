@@ -21,7 +21,7 @@ def construct_brightness_dataset(input_file, output_dir, window_size, stride, st
     data = np.load(input_file)
     
     # Extract time series data and timestamps
-    brightness_data = data['normalized_brightness']
+    brightness_data = data['brightness']
     timestamps = data['timestamps']
     
     # Print basic information
@@ -43,7 +43,7 @@ def construct_brightness_dataset(input_file, output_dir, window_size, stride, st
                 ts_datetime = pd.to_datetime(ts)
             else:
                 try:
-                    ts_datetime = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+                    ts_datetime = datetime.strptime(ts, "%Y%m%d_%H%M%S")
                 except Exception:
                     print(f"Warning: Could not parse timestamp {ts}, skipping")
                     continue
@@ -95,7 +95,7 @@ def construct_brightness_dataset(input_file, output_dir, window_size, stride, st
                 timestamp_str = pd.to_datetime(timestamp_str).strftime("%Y%m%d_%H%M%S")
             # If timestamp is already a string but in a different format
             else:
-                dt = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+                dt = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
                 timestamp_str = dt.strftime("%Y%m%d_%H%M%S")
         except Exception as e:
             print(f"Error formatting timestamp {window_timestamps[0]}: {e}")
