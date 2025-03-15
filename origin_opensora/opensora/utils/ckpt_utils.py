@@ -275,6 +275,67 @@ def load_checkpoint(
 
     return model
 
+def load_checkpoint_exclude_layers(
+    model,
+    ckpt_path,
+    save_as_pt=False,
+    model_name="model",
+    strict=False,
+    adapt_16ch=False,
+    cache_dir=None,
+    device: torch.device | str = "cuda",
+    freeze_other=True,  # Added this argument to control freezing behavior
+    init_cross_attn=True,
+):
+    if not os.path.exists(ckpt_path):
+        get_logger().info(f"Checkpoint not found at {ckpt_path}, trying to download from Hugging Face Hub")
+        ckpt_path = load_from_hf_hub(ckpt_path, cache_dir)
+
+    get_logger().info(f"Loading checkpoint from {ckpt_path}")
+
+    if ckpt_path.endswith(".safetensors"):
+        ckpt = load_file(ckpt_path, device=str(device))
+    elif ckpt_path.endswith(".pt") or ckpt_path.endswith(".pth"):
+        ckpt = torch.load(ckpt_path, map_location=device)
+        if adapt_16ch:
+            ckpt = adapt_16ch_vae(ckpt)
+    else:
+        assert os.path.isdir(ckpt_path), f"Invalid checkpoint path: {ckpt_path}"
+        load_from_sharded_state_dict(model, ckpt_path, model_name, strict=strict)
+        get_logger().info("Model checkpoint loaded from %s", ckpt_path)
+        if save_as_pt:
+            save_path = os.path.join(ckpt_path, model_name + "_ckpt.pt")
+            torch.save(model.state_dict(), save_path)
+            get_logger().info("Model checkpoint saved to %s", save_path)
+        return model
+
+    # Filter out cross_attn and y_embedder
+    if init_cross_attn:
+        filtered_ckpt = {k: v for k, v in ckpt.items() if "cross_attn" not in k and "y_embedder" not in k}
+    
+    # Load the filtered state dict
+    missing_keys, unexpected_keys = model.load_state_dict(filtered_ckpt, strict=False)
+    get_logger().info("Missing keys: %s", missing_keys)
+    get_logger().info("Unexpected keys: %s", unexpected_keys)
+
+    # Initialize cross_attn and y_embedder weights to zero
+    if init_cross_attn or freeze_other:
+        for name, param in model.named_parameters():
+            if init_cross_attn and ("cross_attn" in name or "y_embedder" in name):
+                if "weight" in name:
+                    # Xavier/Glorot uniform initialization (good for most attention mechanisms)
+                    nn.init.xavier_uniform_(param.data, gain=0.02)
+                elif "bias" in name:
+                    # Initialize biases to zero
+                    nn.init.zeros_(param.data)
+                # Special case for projection layers
+                if ".proj.weight" in name:
+                    # Small initialization for projection layers (helps stability)
+                    nn.init.normal_(param.data, std=0.01)
+            elif freeze_other:
+                param.requires_grad = False  # Freeze other layers if specified
+
+    return model
 
 def load_json(file_path: str):
     with open(file_path, "r") as f:

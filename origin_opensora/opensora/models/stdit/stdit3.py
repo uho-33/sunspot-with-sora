@@ -31,7 +31,7 @@ from opensora.models.layers.blocks import (
 )
 from opensora.models.layers.rotary_embedding_torch import RotaryEmbedding
 from opensora.registry import MODELS
-from opensora.utils.ckpt_utils import load_checkpoint
+from opensora.utils.ckpt_utils import load_checkpoint, load_checkpoint_exclude_layers
 
 
 class STDiT3Block(nn.Module):
@@ -634,7 +634,7 @@ def STDiT3_3B_2(from_pretrained=None, **kwargs):
 
 
 @MODELS.register_module("Sunspot_STDiT3-XL/2")
-def Sunspot_STDiT3_XL_2(from_pretrained=None, **kwargs):
+def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=True, init_cross_attn=True, **kwargs):
     force_huggingface = kwargs.pop("force_huggingface", False)
     adapt_16ch = kwargs.pop("adapt_16ch", False)
     if force_huggingface or from_pretrained is not None and not os.path.exists(from_pretrained):
@@ -643,5 +643,5 @@ def Sunspot_STDiT3_XL_2(from_pretrained=None, **kwargs):
         config = STDiT3Config(depth=28, hidden_size=1152, patch_size=(1, 2, 2), num_heads=16, **kwargs)
         model = STDiT3(config)
         if from_pretrained is not None:
-            load_checkpoint(model, from_pretrained, adapt_16ch=adapt_16ch)
+            load_checkpoint_exclude_layers(model, from_pretrained, freeze_other=True, init_cross_attn=True, adapt_16ch=adapt_16ch)
     return model

@@ -19,12 +19,14 @@ plugin = "zero1"
 # Model settings
 model = dict(
     type="Sunspot_STDiT3-XL/2",
-    from_pretrained=None,
+    from_pretrained="hpcai-tech/OpenSora-STDiT-v4",
     qk_norm=True,
     enable_flash_attn=True,
     enable_layernorm_kernel=True,
     kernel_size=(8, 8, -1),  # H W T
     use_spatial_rope=True,
+    freeze_other=True, 
+    init_cross_attn=True,
 )
 vae = dict(
     type="OpenSoraVAE_V1_3",
@@ -61,7 +63,7 @@ ckpt_every = 20
 
 # optimization settings
 lr = 5e-5
-warmup_steps = 1000
+warmup_steps = 500
 grad_clip = 1.0
 adam_eps = 1e-15
 ema_decay = 0.99

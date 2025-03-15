@@ -196,6 +196,7 @@ class FourierFeatureEncoder:
         model_max_length=64,
         device="cuda",
         dtype=torch.float,
+        **kwargs,
     ):
         # Use the specific pytorch dtype object
         if isinstance(dtype, str):
