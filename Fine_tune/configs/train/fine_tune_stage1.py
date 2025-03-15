@@ -13,11 +13,11 @@ bucket_config = {
 grad_checkpoint = True
 
 # Add this to your configuration:
-batch_size = 2  
+batch_size = 4  
 
 # Acceleration settings
-num_workers = 3
-num_bucket_build_workers = 6
+num_workers = 6
+num_bucket_build_workers = 12
 dtype = "bf16"
 plugin = "zero1"
 
@@ -66,7 +66,7 @@ outputs = "outputs"
 wandb = True
 epochs = 1000
 log_every = 10
-ckpt_every = 20
+ckpt_every = 250
 
 # optimization settings
 lr = 5e-5
