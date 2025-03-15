@@ -411,6 +411,7 @@ class SunObservationDataset(torch.utils.data.Dataset):
         time_series_dir="dataset/training/figure/360p/L16-S8/",
         brightness_dir="dataset/training/brightness/L16-S8/",
         return_path=False,
+        return_filename=False,
     ):
         self.time_series_dir = os.path.expanduser(time_series_dir)
         self.brightness_dir = os.path.expanduser(brightness_dir)
@@ -423,6 +424,7 @@ class SunObservationDataset(torch.utils.data.Dataset):
         }
         self.tokenize_fn = tokenize_fn
         self.return_path = return_path
+        self.return_filename = return_filename
         
         # Find all sequence directories that have corresponding brightness data
         self.sequence_dirs = []
@@ -496,7 +498,8 @@ class SunObservationDataset(torch.utils.data.Dataset):
         
         if self.return_path:
             ret["path"] = sequence_path
-            
+        if self.return_filename:
+            ret["filename"] = [image_files[idx] for idx in selected_indices]
         return ret
 
     def __getitem__(self, index):

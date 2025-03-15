@@ -23,3 +23,17 @@ torchrun --standalone --nproc_per_node 1 origin_opensora/scripts/train.py \
 
 colossalai run --nproc_per_node 1 --hostfile hostfile origin_opensora/scripts/train.py \
     Fine_tune/configs/train/fine_tune.py 
+
+
+=== prompt with copilot
+
+I modified a T2V model to achieve reconstruction of visible observation images of sun from the bulk brightness during this period. 
+
+I want to evaluate my fine-tuned model's performance in different ckp. The validation data is in `/content/dataset/validation` whose structure is similar to training data(you can check `Fine_tune\configs\train\fine_tune_stage1.py` to see it). The model's config is in `Fine_tune\configs\train\fine_tune_stage1.py`. Besides, You can check my modifed dataset class `SunObservationDataset` in `origin_opensora\opensora\datasets\datasets.py` to understand the structure of my data.
+
+The `script\inference.py` is modified inference script for my modified model, where I have added `is_validation` to help the validation process.
+
+The ckp (ema.pt) is in subdir of `outputs\0002-Sunspot_STDiT3-XL-2`, for example, `outputs\0002-Sunspot_STDiT3-XL-2\epoch5-global_step250\ema.pt`, which are named in similar way.
+
+I want to evaluate the reconstruction loss of the model. For the metric, my preliminary idea is to use mean abs loss. If you have better choices, you can also add them to help me have a more complete evaluation.
+
