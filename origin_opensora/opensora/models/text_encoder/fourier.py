@@ -16,7 +16,7 @@ class FourierFeatureEmbedder(nn.Module):
         self,
         input_dim=1,
         mapping_size=256,
-        max_period=10000,
+        max_period=20,
     ):
         super().__init__()
         self.input_dim = input_dim
@@ -26,7 +26,7 @@ class FourierFeatureEmbedder(nn.Module):
         
     
     @staticmethod
-    def timestep_embedding(t, dim, max_period=10000):
+    def timestep_embedding(t, dim, max_period=20):
         """
         Create sinusoidal timestep embeddings.
         :param t: a 1-D Tensor of N indices, one per batch element.
@@ -82,7 +82,7 @@ class FourierFeatureEncoderInner:
         self,
         input_dim=1,
         mapping_size=256,
-        max_period=10000,
+        max_period=20,
         model_max_length=64,
         device="cuda",
         dtype=torch.float,

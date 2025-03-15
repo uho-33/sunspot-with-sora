@@ -63,7 +63,8 @@ def prepare_dataloader(
             ),
             batch_sampler,
         )
-    elif isinstance(dataset, VideoTextDataset) or isinstance(dataset, VideoClasssificationDataset) or isinstance(dataset, SunObservationDataset):
+    elif isinstance(dataset, VideoTextDataset) or isinstance(dataset, VideoClasssificationDataset) \
+        or isinstance(dataset, SunObservationDataset):
         process_group = process_group or _get_default_group()
         sampler = StatefulDistributedSampler(
             dataset,

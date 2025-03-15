@@ -12,10 +12,10 @@ def filter_matching_data():
     and the brightness timeseries data. Also standardizes timestamps to yyyymmdd_hhmmss format.
     """
     # Paths
-    image_dir = r"data\processed\validation\figure\figure-downsample\360p"
-    brightness_file = r"data\processed\validation\brightness\Ic_nolimbdark_720s_normalized_dn_brightness_timeseries.npz"
-    output_dir = image_dir + "/../" +"filtered"
-    filtered_image_dir = brightness_file + "/../" + "360p_filtered"
+    image_dir = r"data\processed\figure\figure-downsample\360p"
+    brightness_file = r"data\processed\brightness\Ic_720s_normalize_dn_brightness_timeseries.npz"
+    output_dir = brightness_file + "/../" +"filtered"
+    filtered_image_dir = image_dir + "/../" + "360p_filtered"
     
     # Ensure output directories exist
     os.makedirs(output_dir, exist_ok=True)
