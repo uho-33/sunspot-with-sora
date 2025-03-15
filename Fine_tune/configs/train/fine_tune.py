@@ -2,6 +2,8 @@
 dataset = dict(
     type="SunObservationDataset",
     transform_name="center",
+    time_series_dir="/content/dataset/training/figure/360p/L16-S8/",
+    brightness_dir="/content/dataset/training/brightness/L16-S8/",
 )
 bucket_config = {
     "360p": {
@@ -9,6 +11,9 @@ bucket_config = {
     },
 }
 grad_checkpoint = True
+
+# Add this to your configuration:
+batch_size = 2  
 
 # Acceleration settings
 num_workers = 3
@@ -22,7 +27,9 @@ model = dict(
     from_pretrained="hpcai-tech/OpenSora-STDiT-v4",
     qk_norm=True,
     enable_flash_attn=True,
-    enable_layernorm_kernel=True,
+    enable_layernorm_kernel=False,
+    ignore_mismatched_sizes=True,
+    class_dropout_prob=0.1,
     kernel_size=(8, 8, -1),  # H W T
     use_spatial_rope=True,
     freeze_other=True, 

@@ -5,11 +5,14 @@ torch==2.2.2 --index-url https://download.pytorch.org/whl/cu121
 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cu121
 xformers==0.0.25.post1 --index-url https://download.pytorch.org/whl/cu121
 torchaudio
-numpy>=1.22.0
+numpy<2.0.0
 Pillow>=9.0.0
 rotary_embedding_torch==0.5.3
 diffusers==0.29.0 # for vae
 pandarallel
+timm==0.9.16
+pandas>=2.0.3
+
 
 # vae
 beartype==0.18.5
@@ -39,3 +42,6 @@ pytest-benchmark>=4.0.0  # Optional: for performance testing
 wandb
 tensorboard>=2.14.0
 pyarrow>=16.1.0 # for parquet
+
+pre-commit>=3.5.0
+openai
