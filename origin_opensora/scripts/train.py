@@ -298,7 +298,7 @@ def main():
         ) as pbar:
             for step, batch in pbar:
                 timer_list = []
-                paths = batch.pop("path")
+
                 with timers["move_data"] as move_data_t:
                     x = batch.pop("video").to(device, dtype)  # [B, C, T, H, W]
                     y = batch.pop("text")
@@ -512,8 +512,7 @@ def main():
                     )
                     for timer in timer_list:
                         log_str += f"{timer.name}: {timer.elapsed_time:.3f}s | "
-                    # print(log_str)
-                    log_str += f"path: {paths}"
+
                     record_file.write(log_str + "\n")
                     record_file.flush()
         sampler.reset()
