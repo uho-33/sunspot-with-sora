@@ -66,7 +66,7 @@ outputs = "outputs"
 wandb = True
 epochs = 1000
 log_every = 10
-ckpt_every = 250
+ckpt_every = 500
 
 # optimization settings
 lr = 5e-5
