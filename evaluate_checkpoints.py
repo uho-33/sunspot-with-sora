@@ -17,10 +17,11 @@ from tqdm import tqdm
 import numpy as np
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import peak_signal_noise_ratio as psnr
+import wandb  # Import wandb for logging
 
 # Add paths to pythonpath
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), './origin_opensora')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), './')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../origin_opensora')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from opensora.acceleration.parallel_states import get_data_parallel_group
 from opensora.datasets.dataloader import prepare_dataloader
@@ -119,6 +120,7 @@ def evaluate_checkpoint(cfg, checkpoint_path, validation_dataloader, device, dty
         if enable_sequence_parallelism:
             set_sequence_parallel_group(dist.group.WORLD)
     
+    cfg.model["from_pretrained"] = checkpoint_path
     model = build_module(
         cfg.model,
         MODELS,
@@ -130,7 +132,6 @@ def evaluate_checkpoint(cfg, checkpoint_path, validation_dataloader, device, dty
     ).to(device, dtype).eval()
     
     # Load checkpoint
-    model = load_checkpoint(model, checkpoint_path, device)
     text_encoder.y_embedder = model.y_embedder
     
     # Build scheduler
@@ -177,6 +178,30 @@ def evaluate_checkpoint(cfg, checkpoint_path, validation_dataloader, device, dty
                     all_metrics[metric_name].append(value)
             
             total_samples += len(ground_truth)
+            
+            # Log a sample image to wandb for visualization (first batch only)
+            if is_main_process() and total_samples <= batch_size and cfg.get("wandb", False):
+                # Log the first frame of the first video in the batch
+                gt_frame = ground_truth[0, :, 0].detach().cpu().numpy()
+                pred_frame = generated_videos[0, :, 0].detach().cpu().numpy()
+                
+                # Convert from CHW to HWC for visualization
+                gt_frame = np.transpose(gt_frame, (1, 2, 0))
+                pred_frame = np.transpose(pred_frame, (1, 2, 0))
+                
+                # Ensure values are in [0, 1] range
+                gt_frame = np.clip(gt_frame, 0, 1)
+                pred_frame = np.clip(pred_frame, 0, 1)
+                
+                # Create a side-by-side comparison
+                comparison = np.concatenate([gt_frame, pred_frame], axis=1)
+                
+                wandb.log({
+                    f"checkpoint_{epoch}_{step}/sample_comparison": wandb.Image(
+                        comparison, 
+                        caption=f"Left: Ground Truth | Right: Generated (Epoch {epoch}, Step {step})"
+                    )
+                })
     
     # Calculate average metrics
     avg_metrics = {metric: sum(values) / len(values) for metric, values in all_metrics.items()}
@@ -184,6 +209,21 @@ def evaluate_checkpoint(cfg, checkpoint_path, validation_dataloader, device, dty
     # Add checkpoint info
     avg_metrics["epoch"] = epoch
     avg_metrics["step"] = step
+    
+    # Log metrics to wandb if enabled
+    if is_main_process() and cfg.get("wandb", False):
+        # Log to wandb with step as x-axis
+        wandb_metrics = {
+            "mae": avg_metrics["mae"],
+            "mse": avg_metrics["mse"],
+            "psnr": avg_metrics["psnr"],
+            "ssim": avg_metrics["ssim"],
+        }
+        wandb.log(wandb_metrics, step=step)
+        
+        # Also log as a separate entry with checkpoint info in the name
+        checkpoint_metrics = {f"checkpoint_{epoch}_{step}/{k}": v for k, v in wandb_metrics.items()}
+        wandb.log(checkpoint_metrics)
     
     logger.info(f"Finished evaluation of checkpoint (Epoch {epoch}, Step {step})")
     logger.info(f"Metrics: MAE={avg_metrics['mae']:.4f}, MSE={avg_metrics['mse']:.4f}, "
@@ -255,6 +295,14 @@ def main():
                         help='Batch size for validation')
     parser.add_argument('--specific_checkpoint', type=str, default=None,
                         help='Evaluate only this specific checkpoint path')
+    parser.add_argument('--use_wandb', action='store_true',
+                        help='Enable logging to Weights & Biases')
+    parser.add_argument('--wandb_project', type=str, default='sun-reconstruction-eval',
+                        help='Weights & Biases project name')
+    parser.add_argument('--wandb_entity', type=str, default=None,
+                        help='Weights & Biases entity/team name')
+    parser.add_argument('--wandb_run_name', type=str, default=None,
+                        help='Weights & Biases run name')
     args = parser.parse_args()
     
     # Create results directory
@@ -275,6 +323,31 @@ def main():
         brightness_dir=os.path.join(args.validation_data_dir, "brightness/L16-S8/"),
     )
     cfg.batch_size = args.batch_size
+    
+    # Set wandb flag in config
+    if args.use_wandb:
+        cfg.wandb = True
+    
+    # Initialize wandb if enabled
+    if is_main_process() and (cfg.get("wandb", False) or args.use_wandb):
+        model_name = os.path.basename(args.checkpoints_dir)
+        wandb_run_name = args.wandb_run_name or f"evaluation_{model_name}"
+        
+        wandb.init(
+            project=args.wandb_project,
+            entity=args.wandb_entity,
+            name=wandb_run_name,
+            config={
+                "model_dir": args.checkpoints_dir,
+                "validation_data_dir": args.validation_data_dir,
+                "batch_size": args.batch_size,
+                "config_file": args.config,
+                "specific_checkpoint": args.specific_checkpoint
+            }
+        )
+        
+        # Create a table for metrics summary
+        metrics_table = wandb.Table(columns=["Epoch", "Step", "MAE", "MSE", "PSNR", "SSIM"])
     
     # Device and dtype
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -320,9 +393,13 @@ def main():
         checkpoints = [args.specific_checkpoint]
     else:
         checkpoints = find_checkpoints(args.checkpoints_dir)
+        # Sort checkpoints by step number for proper progression in wandb
+        checkpoints.sort(key=lambda x: extract_checkpoint_info(x)[1] or 0)
     
     if not checkpoints:
         logger.error(f"No checkpoints found in {args.checkpoints_dir}")
+        if is_main_process() and (cfg.get("wandb", False) or args.use_wandb):
+            wandb.finish()
         return
     
     logger.info(f"Found {len(checkpoints)} checkpoints to evaluate")
@@ -339,6 +416,17 @@ def main():
             logger
         )
         all_metrics.append(metrics)
+        
+        # Add to wandb metrics table
+        if is_main_process() and (cfg.get("wandb", False) or args.use_wandb):
+            metrics_table.add_data(
+                metrics["epoch"],
+                metrics["step"],
+                round(metrics["mae"], 4),
+                round(metrics["mse"], 4),
+                round(metrics["psnr"], 2),
+                round(metrics["ssim"], 4)
+            )
     
     # Save results
     results_path = os.path.join(args.results_dir, 'metrics.json')
@@ -348,6 +436,75 @@ def main():
     # Plot metrics
     plot_path = os.path.join(args.results_dir, 'metrics_plot.png')
     plot_metrics(all_metrics, plot_path)
+    
+    # Log final summary to wandb
+    if is_main_process() and (cfg.get("wandb", False) or args.use_wandb):
+        # Log the summary metrics table
+        wandb.log({"metrics_summary": metrics_table})
+        
+        # Log the metrics plot
+        wandb.log({"metrics_plot": wandb.Image(plot_path)})
+        
+        # Create performance comparison charts
+        epochs = [m["epoch"] for m in all_metrics]
+        steps = [m["step"] for m in all_metrics]
+        
+        # Log line charts
+        wandb.log({
+            "performance/mae_vs_step": wandb.plot.line(
+                table=wandb.Table(data=[[s, m["mae"]] for s, m in zip(steps, all_metrics)],
+                                  columns=["step", "mae"]),
+                x="step",
+                y="mae",
+                title="MAE vs Training Step"
+            ),
+            "performance/mse_vs_step": wandb.plot.line(
+                table=wandb.Table(data=[[s, m["mse"]] for s, m in zip(steps, all_metrics)],
+                                  columns=["step", "mse"]),
+                x="step",
+                y="mse",
+                title="MSE vs Training Step"
+            ),
+            "performance/psnr_vs_step": wandb.plot.line(
+                table=wandb.Table(data=[[s, m["psnr"]] for s, m in zip(steps, all_metrics)],
+                                  columns=["step", "psnr"]),
+                x="step",
+                y="psnr",
+                title="PSNR vs Training Step"
+            ),
+            "performance/ssim_vs_step": wandb.plot.line(
+                table=wandb.Table(data=[[s, m["ssim"]] for s, m in zip(steps, all_metrics)],
+                                  columns=["step", "ssim"]),
+                x="step",
+                y="ssim",
+                title="SSIM vs Training Step"
+            ),
+        })
+        
+        # Find best checkpoints for each metric
+        best_mae_idx = min(range(len(all_metrics)), key=lambda i: all_metrics[i]["mae"])
+        best_mse_idx = min(range(len(all_metrics)), key=lambda i: all_metrics[i]["mse"])
+        best_psnr_idx = max(range(len(all_metrics)), key=lambda i: all_metrics[i]["psnr"])
+        best_ssim_idx = max(range(len(all_metrics)), key=lambda i: all_metrics[i]["ssim"])
+        
+        # Log best metrics summary
+        wandb.run.summary.update({
+            "best_mae": all_metrics[best_mae_idx]["mae"],
+            "best_mae_epoch": all_metrics[best_mae_idx]["epoch"],
+            "best_mae_step": all_metrics[best_mae_idx]["step"],
+            "best_mse": all_metrics[best_mse_idx]["mse"],
+            "best_mse_epoch": all_metrics[best_mse_idx]["epoch"],
+            "best_mse_step": all_metrics[best_mse_idx]["step"],
+            "best_psnr": all_metrics[best_psnr_idx]["psnr"],
+            "best_psnr_epoch": all_metrics[best_psnr_idx]["epoch"],
+            "best_psnr_step": all_metrics[best_psnr_idx]["step"],
+            "best_ssim": all_metrics[best_ssim_idx]["ssim"],
+            "best_ssim_epoch": all_metrics[best_ssim_idx]["epoch"],
+            "best_ssim_step": all_metrics[best_ssim_idx]["step"],
+        })
+        
+        # Close wandb
+        wandb.finish()
     
     logger.info(f"Evaluation complete. Results saved to {args.results_dir}")
     

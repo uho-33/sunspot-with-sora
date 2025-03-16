@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 import sys
 # Add the project root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), './origin_opensora')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../origin_opensora')))
 
 from opensora.acceleration.parallel_states import get_data_parallel_group
 from opensora.datasets.dataloader import prepare_dataloader
