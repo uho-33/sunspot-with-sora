@@ -214,5 +214,5 @@ checkpoint/
 backup/
 log/
 src/
-saved_models/
 venv/
+saved-model/

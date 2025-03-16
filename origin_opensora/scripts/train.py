@@ -496,6 +496,32 @@ def main():
                         )
                         if dist.get_rank() == 0:
                             model_sharding(ema)
+                            # Clean up old optimizer files by overwriting them with empty content
+                            # This works better with Google Drive than deletion which just moves to trash
+                            import glob
+                            import re
+                            
+                            # Get all optimizer file patterns
+                            optimizer_patterns = [
+                                "optimizer/pytorch_optim.bin.index.json",
+                                "optimizer/pytorch_optim_group.bin",
+                                "optimizer/pytorch_optim-*.bin"
+                            ]
+                            
+                            # Find all checkpoint directories except the latest one
+                            checkpoint_dirs = sorted(glob.glob(os.path.join(exp_dir, "checkpoint-*")))
+                            if len(checkpoint_dirs) > 1:
+                                for old_dir in checkpoint_dirs[:-1]:
+                                    # For each pattern, find and overwrite files in the old checkpoint
+                                    for pattern in optimizer_patterns:
+                                        for old_file in glob.glob(os.path.join(old_dir, pattern)):
+                                            try:
+                                                # Overwrite with empty content instead of deleting
+                                                with open(old_file, 'w') as f:
+                                                    f.write("")
+                                                logger.info(f"Cleared optimizer file to save space: {old_file}")
+                                            except Exception as e:
+                                                logger.warning(f"Failed to clear optimizer file {old_file}: {e}")
                         logger.info(
                             "Saved checkpoint at epoch %s, step %s, global_step %s to %s",
                             epoch,

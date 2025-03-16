@@ -311,6 +311,7 @@ def load_checkpoint_exclude_layers(
 
     # Filter out cross_attn and y_embedder
     if init_cross_attn:
+        print("Initialize cross attention...")
         filtered_ckpt = {k: v for k, v in ckpt.items() if "cross_attn" not in k and "y_embedder" not in k}
     
     # Load the filtered state dict
@@ -320,6 +321,8 @@ def load_checkpoint_exclude_layers(
 
     # Initialize cross_attn and y_embedder weights to zero
     if init_cross_attn or freeze_other:
+        if freeze_other:
+            print("Frezze layers except cross attention layes")
         for name, param in model.named_parameters():
             if init_cross_attn and ("cross_attn" in name or "y_embedder" in name):
                 if "weight" in name:

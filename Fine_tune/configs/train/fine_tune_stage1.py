@@ -24,7 +24,7 @@ plugin = "zero1"
 # Model settings
 model = dict(
     type="Sunspot_STDiT3-XL/2",
-    from_pretrained="hpcai-tech/OpenSora-STDiT-v4",
+    from_pretrained="saved-model/OpenSora-STDiT-v4/model.safetensors",
     qk_norm=True,
     enable_flash_attn=True,
     enable_layernorm_kernel=False,
