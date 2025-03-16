@@ -310,6 +310,7 @@ def load_checkpoint_exclude_layers(
         return model
 
     # Filter out cross_attn and y_embedder
+    filtered_ckpt = None
     if init_cross_attn:
         print("Initialize cross attention...")
         filtered_ckpt = {k: v for k, v in ckpt.items() if "cross_attn" not in k and "y_embedder" not in k}

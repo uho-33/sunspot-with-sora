@@ -642,6 +642,10 @@ def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=True, init_cross_attn
     else:
         config = STDiT3Config(depth=28, hidden_size=1152, patch_size=(1, 2, 2), num_heads=16, **kwargs)
         model = STDiT3(config)
+        
         if from_pretrained is not None:
-            load_checkpoint_exclude_layers(model, from_pretrained, freeze_other=True, init_cross_attn=True, adapt_16ch=adapt_16ch)
+            if (freeze_other or init_cross_attn) is True:
+                load_checkpoint_exclude_layers(model, from_pretrained, freeze_other=freeze_other, init_cross_attn=init_cross_attn, adapt_16ch=adapt_16ch)
+            else:
+                load_checkpoint(model, from_pretrained)
     return model
