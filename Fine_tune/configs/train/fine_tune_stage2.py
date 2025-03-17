@@ -51,6 +51,7 @@ vae = dict(
 text_encoder = dict(
     type="fourier",
     from_pretrained=None,
+    mapping_size=256,
     model_max_length=64,
     shardformer=True,
 )

@@ -178,6 +178,7 @@ runs/
 checkpoints/
 outputs/
 outputs
+output/
 samples/
 samples
 logs/

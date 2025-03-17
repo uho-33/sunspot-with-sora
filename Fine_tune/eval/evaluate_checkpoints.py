@@ -470,9 +470,9 @@ def evaluate_checkpoint(cfg, checkpoint_path, validation_dataloader, device, dty
     
     return avg_metrics
 
-def find_checkpoints(checkpoints_dir):
-    """Find all checkpoint files (ema.pt) in the given directory and its subdirectories."""
-    checkpoint_pattern = os.path.join(checkpoints_dir, "epoch*-global_step*", "ema.pt")
+def find_checkpoints(checkpoints_dir, checkpoint_name="ema.pt"):
+    """Find all checkpoint files (default: ema.pt) in the given directory and its subdirectories."""
+    checkpoint_pattern = os.path.join(checkpoints_dir, "epoch*-global_step*", checkpoint_name)
     return sorted(glob.glob(checkpoint_pattern))
 
 def plot_metrics(metrics_list, save_path):
@@ -533,6 +533,8 @@ def main():
                         help='Directory containing validation data')
     parser.add_argument('--results_dir', type=str, default='evaluation_results',
                         help='Directory to save evaluation results')
+    parser.add_argument('--checkpoint_name', type=str, default='ema.pt',
+                        help='The type of model loaded, default ema.pt')
     parser.add_argument('--batch_size', type=int, default=4,
                         help='Batch size for validation')
     parser.add_argument('--specific_checkpoint', type=str, default=None,
@@ -710,7 +712,7 @@ def main():
             checkpoints = [args.specific_checkpoint]
         else:
             logger.info(f"Finding checkpoints in {args.checkpoints_dir}")
-            checkpoints = find_checkpoints(args.checkpoints_dir)
+            checkpoints = find_checkpoints(args.checkpoints_dir, args.checkpoint_name)
             # Sort checkpoints by step number for proper progression in wandb
             checkpoints.sort(key=lambda x: extract_checkpoint_info(x)[1] or 0)
         

@@ -5,9 +5,10 @@
 # Default values
 CONFIG="Fine_tune/configs/train/evaluate.py"
 CHECKPINTS_DIR_NAME="0004-Sunspot_STDiT3-XL-2"
+CHECKPOINT_NAME=""
 CHECKPOINTS_DIR="../outputs/${CHECKPINTS_DIR_NAME}"
 VALIDATION_DATA_DIR="/content/dataset/validation"
-RESULTS_DIR="../output/evaluation_results/${CHECKPINTS_DIR_NAME}"
+RESULTS_DIR="output/evaluation_results/${CHECKPINTS_DIR_NAME}/${CHECKPOINT_NAME}"
 BATCH_SIZE=5
 USE_WANDB=True
 WANDB_PROJECT="sun-reconstruction-eval"
@@ -79,6 +80,7 @@ CMD="torchrun --standalone --nproc_per_node=$NUM_GPUS Fine_tune/eval/evaluate_ch
   --checkpoints_dir=\"$CHECKPOINTS_DIR\" \
   --validation_data_dir=\"$VALIDATION_DATA_DIR\" \
   --results_dir=\"$RESULTS_DIR\" \
+  --checkpoint_name=\"$CHECKPOINT_NAME\"\
   --batch_size=\"$BATCH_SIZE\""
 
 # Add wandb parameters if enabled
