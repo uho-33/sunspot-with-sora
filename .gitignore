@@ -216,3 +216,5 @@ log/
 src/
 venv/
 saved-model/
+vscode*
+code

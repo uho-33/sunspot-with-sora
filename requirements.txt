@@ -12,7 +12,8 @@ diffusers==0.29.0 # for vae
 pandarallel
 timm==0.9.16
 pandas>=2.0.3
-
+decorator==4.4.2
+moviepy==1.0.3
 
 # vae
 beartype==0.18.5

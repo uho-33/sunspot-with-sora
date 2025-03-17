@@ -246,7 +246,22 @@ class FourierFeatureEncoder:
             n: Batch size
             
         Returns:
-            Tensor of shape [n, 1, output_dim]
+            Tensor of shape [n, 1, output_dim] or the shape required by the model
         """
-        null_y = self.y_embedder.y_embedding[None].repeat(n, 1)[:, None]
-        return null_y
+        # Create proper 4D tensor regardless of the original embedding shape
+        if self.y_embedder.y_embedding.dim() == 1:
+            # Handle 1D case
+            embed_dim = self.y_embedder.y_embedding.size(0)
+            return torch.zeros((n, 1, 1, embed_dim), device=self.y_embedder.y_embedding.device, 
+                              dtype=self.y_embedder.y_embedding.dtype)
+        elif self.y_embedder.y_embedding.dim() == 2:
+            # Handle 2D case
+            seq_len, embed_dim = self.y_embedder.y_embedding.shape
+            # Creating 4D tensor [n, 1, seq_len, embed_dim]
+            return torch.zeros((n, 1, seq_len, embed_dim), device=self.y_embedder.y_embedding.device,
+                              dtype=self.y_embedder.y_embedding.dtype)
+        else:
+            # Default case - create a zero tensor in the expected format
+            return torch.zeros((n, 1, self.model_max_length, self.output_dim), 
+                              device=self.y_embedder.y_embedding.device,
+                              dtype=self.y_embedder.y_embedding.dtype)

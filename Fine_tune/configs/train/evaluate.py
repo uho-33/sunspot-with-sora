@@ -32,8 +32,8 @@ model = dict(
     class_dropout_prob=0.1,
     kernel_size=(8, 8, -1),  # H W T
     use_spatial_rope=True,
-    freeze_other=True, 
-    init_cross_attn=True,
+    freeze_other=False, 
+    init_cross_attn=False,
 )
 vae = dict(
     type="OpenSoraVAE_V1_3",

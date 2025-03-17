@@ -6,7 +6,6 @@ PROJECT_DIR="${BASE_DIR}/drive/MyDrive/projects/sunspot-with-sora"
 DATA_DIR="${BASE_DIR}/dataset"
 LOG_DIR="${PROJECT_DIR}/log"
 CHECKPOINT_DIR="${PROJECT_DIR}/checkpoint"
-LOG_FILE="${LOG_DIR}/fine-tune_$(date +%Y%m%d_%H%M%S).log"
 
 # Create necessary directories
 mkdir -p "${LOG_DIR}"
@@ -44,7 +43,7 @@ python Fine_tune/vae/finetune_vae.py \
     --batch_size 1 \
     --epochs 50 \
     --lr 1e-5 \
-    --beta 1e-6 \
+    --beta 0.001 \
     --micro_frame_size 2 \
     --wandb_project "sunspot-vae-pre" \
     --run_name "finetune_vae_$(date +%Y%m%d_%H%M%S)" \
@@ -61,11 +60,7 @@ python Fine_tune/vae/finetune_vae.py \
     --max_grad_norm 1.0 \
     --num_workers 0 \
     --pin_memory \
-    2>&1 | tee -a "${LOG_FILE}" || {
-        echo "Error: Training process failed with exit code $?"
-        echo "Check log file for details: ${LOG_FILE}"
-        exit 1
-    }
+    >& "${LOG_DIR}/fine-tune_$(date +%Y%m%d_%H%M%S).log"
 
 # Check if the training completed successfully
 if [ $? -eq 0 ]; then

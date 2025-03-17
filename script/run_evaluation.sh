@@ -3,15 +3,17 @@
 # Script to run the evaluation across all checkpoints
 
 # Default values
-CONFIG="Fine_tune/configs/train/fine_tune_stage1.py"
-CHECKPOINTS_DIR="outputs/0002-Sunspot_STDiT3-XL-2"
+CONFIG="Fine_tune/configs/train/evaluate.py"
+CHECKPINTS_DIR_NAME="0004-Sunspot_STDiT3-XL-2"
+CHECKPOINTS_DIR="../outputs/${CHECKPINTS_DIR_NAME}"
 VALIDATION_DATA_DIR="/content/dataset/validation"
-RESULTS_DIR="evaluation_results"
-BATCH_SIZE=4
+RESULTS_DIR="../output/evaluation_results/${CHECKPINTS_DIR_NAME}"
+BATCH_SIZE=5
 USE_WANDB=True
 WANDB_PROJECT="sun-reconstruction-eval"
 WANDB_ENTITY=""
-WANDB_RUN_NAME="stage1"
+WANDB_RUN_NAME="${CHECKPINTS_DIR_NAME}"
+NUM_GPUS=1
 
 # Parse named arguments
 while [ $# -gt 0 ]; do
@@ -43,6 +45,9 @@ while [ $# -gt 0 ]; do
     --wandb_run_name=*)
       WANDB_RUN_NAME="${1#*=}"
       ;;
+    --num_gpus=*)
+      NUM_GPUS="${1#*=}"
+      ;;
     *)
       echo "Unknown parameter: $1"
       exit 1
@@ -57,6 +62,7 @@ echo "Checkpoints directory: $CHECKPOINTS_DIR"
 echo "Validation data directory: $VALIDATION_DATA_DIR"
 echo "Results directory: $RESULTS_DIR"
 echo "Batch size: $BATCH_SIZE"
+echo "Number of GPUs: $NUM_GPUS"
 echo "Use wandb: $USE_WANDB"
 if [ "$USE_WANDB" = true ]; then
   echo "Wandb project: $WANDB_PROJECT"
@@ -68,7 +74,7 @@ fi
 mkdir -p "$RESULTS_DIR"
 
 # Build command
-CMD="python evaluate_checkpoints.py \
+CMD="torchrun --standalone --nproc_per_node=$NUM_GPUS Fine_tune/eval/evaluate_checkpoints.py \
   --config=\"$CONFIG\" \
   --checkpoints_dir=\"$CHECKPOINTS_DIR\" \
   --validation_data_dir=\"$VALIDATION_DATA_DIR\" \
@@ -89,6 +95,7 @@ if [ "$USE_WANDB" = true ]; then
 fi
 
 # Execute the command
+echo "Running command: $CMD"
 eval $CMD
 
 echo "Evaluation completed. Results saved to $RESULTS_DIR"
