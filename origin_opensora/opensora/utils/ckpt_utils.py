@@ -17,6 +17,7 @@ from safetensors.torch import load_file
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from torchvision.datasets.utils import download_url
+from copy import deepcopy
 
 from .misc import get_logger
 
@@ -339,6 +340,252 @@ def load_checkpoint_exclude_layers(
             elif freeze_other:
                 param.requires_grad = False  # Freeze other layers if specified
 
+    return model
+
+def load_checkpoint_with_scaled_mapping(
+    model,
+    ckpt_path,
+    save_as_pt=False,
+    model_name="model",
+    strict=False,
+    adapt_16ch=False,
+    cache_dir=None,
+    device: torch.device | str = "cuda",
+    orig_mapping_size=256,
+    new_mapping_size=1024,
+    adaptation_method="linear",  # Options: "linear", "truncate", "copy" 
+):
+    """
+    Load checkpoint with different mapping_size for text encoder.
+    This function handles shape mismatches in y_embedder and cross_attn components.
+    
+    Args:
+        model: Model to load the checkpoint into
+        ckpt_path: Path to the checkpoint
+        save_as_pt: Whether to save the loaded checkpoint as .pt file
+        model_name: Name of the model in the checkpoint
+        strict: Whether to strictly enforce that the keys match
+        adapt_16ch: Whether to adapt the checkpoint for 16 channel VAE
+        cache_dir: Cache directory for downloading checkpoints
+        device: Device to load the checkpoint to
+        orig_mapping_size: Original mapping size used in the checkpoint
+        new_mapping_size: New mapping size to use
+        adaptation_method: Method to use for adapting weights ("linear", "truncate", "copy")
+    """
+    if not os.path.exists(ckpt_path):
+        get_logger().info(f"Checkpoint not found at {ckpt_path}, trying to download from Hugging Face Hub")
+        ckpt_path = load_from_hf_hub(ckpt_path, cache_dir)
+
+    get_logger().info(f"Loading checkpoint from {ckpt_path} with scaled mapping size ({orig_mapping_size} → {new_mapping_size})")
+    
+    # Function for adapting tensor dimensions based on the selected method
+    def adapt_tensor_dim(tensor, target_shape, dim=0):
+        if tensor.shape[dim] == target_shape[dim]:
+            return tensor
+            
+        get_logger().info(f"Adapting tensor from shape {tensor.shape} to {target_shape}")
+        
+        if adaptation_method == "truncate":
+            # Simple truncation or zero-padding
+            result = torch.zeros(target_shape, device=tensor.device, dtype=tensor.dtype)
+            # Calculate how much of the original tensor we can copy
+            slice_size = min(tensor.shape[dim], target_shape[dim])
+            if dim == 0:
+                result[:slice_size] = tensor[:slice_size]
+            elif dim == 1:
+                result[:, :slice_size] = tensor[:, :slice_size]
+            return result
+            
+        elif adaptation_method == "linear":
+            # Linear projection/interpolation
+            if dim == 0:
+                # For first dimension (e.g., token length)
+                result = torch.zeros(target_shape, device=tensor.device, dtype=tensor.dtype)
+                slice_size = min(tensor.shape[0], target_shape[0])
+                result[:slice_size] = tensor[:slice_size]
+                # For any new positions, initialize with mean of existing tokens
+                if target_shape[0] > tensor.shape[0]:
+                    mean_emb = tensor.mean(dim=0, keepdim=True)
+                    result[slice_size:] = mean_emb
+            elif dim == 1:
+                # For second dimension (e.g., embedding dimension)
+                if target_shape[1] > tensor.shape[1]:
+                    # Projection to larger dimension
+                    projection = nn.Linear(tensor.shape[1], target_shape[1], bias=False).to(device)
+                    nn.init.xavier_uniform_(projection.weight, gain=1.0)
+                    with torch.no_grad():
+                        result = projection(tensor)
+                else:
+                    # Projection to smaller dimension
+                    projection = nn.Linear(tensor.shape[1], target_shape[1], bias=False).to(device)
+                    nn.init.xavier_uniform_(projection.weight, gain=1.0)
+                    with torch.no_grad():
+                        result = projection(tensor)
+            return result
+            
+        else:  # "copy" or fallback
+            # Simple copy with zeros for new dimensions
+            result = torch.zeros(target_shape, device=tensor.device, dtype=tensor.dtype)
+            min_shape = [min(s1, s2) for s1, s2 in zip(tensor.shape, target_shape)]
+            if len(min_shape) == 1:
+                result[:min_shape[0]] = tensor[:min_shape[0]]
+            elif len(min_shape) == 2:
+                result[:min_shape[0], :min_shape[1]] = tensor[:min_shape[0], :min_shape[1]]
+            elif len(min_shape) == 3:
+                result[:min_shape[0], :min_shape[1], :min_shape[2]] = tensor[:min_shape[0], :min_shape[1], :min_shape[2]]
+            elif len(min_shape) == 4:
+                result[:min_shape[0], :min_shape[1], :min_shape[2], :min_shape[3]] = \
+                    tensor[:min_shape[0], :min_shape[1], :min_shape[2], :min_shape[3]]
+            return result
+
+    # Function to adapt cross attention weights
+    def adapt_cross_attention(key, param, checkpoint_param):
+        # Handle different cases of cross-attention components
+        if "q_linear.weight" in key:
+            # Query dimension remains the same, but embedding dimension changes
+            if param.shape[1] != checkpoint_param.shape[1]:
+                return adapt_tensor_dim(checkpoint_param, param.shape, dim=1)
+            return checkpoint_param
+                
+        elif "kv_linear.weight" in key:
+            # KV linear weight handles the embedding dimension change
+            if param.shape[0] != checkpoint_param.shape[0] or param.shape[1] != checkpoint_param.shape[1]:
+                # First adjust output dimension (0) if needed
+                adapted = checkpoint_param
+                if param.shape[0] != checkpoint_param.shape[0]:
+                    adapted = adapt_tensor_dim(adapted, (param.shape[0], adapted.shape[1]), dim=0)
+                # Then adjust input dimension (1) if needed
+                if param.shape[1] != checkpoint_param.shape[1]:
+                    adapted = adapt_tensor_dim(adapted, param.shape, dim=1)
+                return adapted
+            return checkpoint_param
+                
+        elif "proj.weight" in key:
+            # Output projection needs to handle output dimension properly
+            if param.shape[0] != checkpoint_param.shape[0] or param.shape[1] != checkpoint_param.shape[1]:
+                # First adapt input dimension (1)
+                adapted = checkpoint_param
+                if param.shape[1] != checkpoint_param.shape[1]:
+                    adapted = adapt_tensor_dim(adapted, (adapted.shape[0], param.shape[1]), dim=1)
+                # Then adapt output dimension (0)
+                if param.shape[0] != adapted.shape[0]:
+                    adapted = adapt_tensor_dim(adapted, param.shape, dim=0)
+                return adapted
+            return checkpoint_param
+                
+        elif "bias" in key:
+            if param.shape != checkpoint_param.shape:
+                return adapt_tensor_dim(checkpoint_param, param.shape, dim=0)
+            return checkpoint_param
+                
+        # Default case - use standard adaptation
+        return adapt_tensor_dim(checkpoint_param, param.shape)
+
+    # Load checkpoint
+    state_dict = None
+    if ckpt_path.endswith(".safetensors"):
+        state_dict = load_file(ckpt_path, device=str(device))
+    elif ckpt_path.endswith(".pt") or ckpt_path.endswith(".pth"):
+        state_dict = torch.load(ckpt_path, map_location=device)
+        if adapt_16ch:
+            state_dict = adapt_16ch_vae(state_dict)
+    
+    # Directory-based checkpoint handling
+    if state_dict is None:
+        assert os.path.isdir(ckpt_path), f"Invalid checkpoint path: {ckpt_path}"
+        
+        # Create a temporary model to load the original weights
+        temp_model = deepcopy(model)
+        load_from_sharded_state_dict(temp_model, ckpt_path, model_name, strict=False)
+        get_logger().info(f"Model checkpoint loaded from {ckpt_path}")
+        
+        # Extract the state dictionary
+        state_dict = temp_model.state_dict()
+        
+        # Free up memory
+        del temp_model
+        torch.cuda.empty_cache()
+        
+    # Identify parameters that need shape adjustment
+    model_state_dict = model.state_dict()
+    adapted_ckpt = {}
+    
+    # Find which parameters have shape mismatches and handle them
+    for key, param in model_state_dict.items():
+        if key in state_dict:
+            checkpoint_param = state_dict[key]
+            
+            # If shapes match, use checkpoint parameter directly
+            if param.shape == checkpoint_param.shape:
+                adapted_ckpt[key] = checkpoint_param
+            else:
+                # Special handling for shape mismatches due to mapping_size changes
+                if "y_embedder.y_embedding" in key:
+                    # For y_embedding, handle both token length and embedding dimension changes
+                    get_logger().info(f"Adapting y_embedding: {key}, from shape {checkpoint_param.shape} to {param.shape}")
+                    
+                    # If token dimension changed
+                    if param.shape[0] != checkpoint_param.shape[0]:
+                        adapted_param = adapt_tensor_dim(checkpoint_param, param.shape, dim=0)
+                    else:
+                        adapted_param = checkpoint_param
+                    
+                    # If embedding dimension changed
+                    if param.shape[1] != adapted_param.shape[1]:
+                        adapted_param = adapt_tensor_dim(adapted_param, param.shape, dim=1)
+                    
+                    adapted_ckpt[key] = adapted_param
+                
+                elif "y_embedder.y_proj" in key:
+                    # For y_proj components, adapt based on the embedding dimension change
+                    get_logger().info(f"Adapting projection layer: {key}")
+                    
+                    if "weight" in key:
+                        # For FC layers, handle both input and output dimensions
+                        adapted_ckpt[key] = adapt_tensor_dim(checkpoint_param, param.shape)
+                    elif "bias" in key:
+                        # For bias, simply reshape or pad as needed
+                        adapted_ckpt[key] = adapt_tensor_dim(checkpoint_param, param.shape, dim=0)
+                
+                elif "cross_attn" in key:
+                    # For cross-attention components, use specialized adaptation
+                    get_logger().info(f"Adapting cross-attention: {key}")
+                    adapted_ckpt[key] = adapt_cross_attention(key, param, checkpoint_param)
+                
+                else:
+                    # For other parameters with shape mismatches, log and try basic adaptation
+                    get_logger().info(f"Shape mismatch for {key}: model {param.shape} vs checkpoint {checkpoint_param.shape}")
+                    adapted_ckpt[key] = adapt_tensor_dim(checkpoint_param, param.shape)
+        else:
+            # For parameters not in checkpoint, initialize them
+            get_logger().info(f"Parameter {key} not found in checkpoint, initializing")
+            if "weight" in key:
+                if ".proj." in key:
+                    # Use smaller initialization for projection layers
+                    adapted_ckpt[key] = nn.init.normal_(torch.zeros_like(param), std=0.01)
+                else:
+                    # Use Xavier/Glorot uniform for other weights
+                    adapted_ckpt[key] = nn.init.xavier_uniform_(torch.zeros_like(param), gain=0.02)
+            elif "bias" in key:
+                # Initialize biases to zero
+                adapted_ckpt[key] = torch.zeros_like(param)
+            else:
+                # For other parameters, just use zeros
+                adapted_ckpt[key] = torch.zeros_like(param)
+                
+    # Load the adapted checkpoint
+    missing_keys, unexpected_keys = model.load_state_dict(adapted_ckpt, strict=False)
+    
+    # Log missing and unexpected keys
+    get_logger().info("Missing keys: %s", missing_keys)
+    get_logger().info("Unexpected keys: %s", unexpected_keys)
+    
+    # Save the adapted checkpoint if requested
+    if save_as_pt:
+        save_path = os.path.join(os.path.dirname(ckpt_path), model_name + "_adapted_ckpt.pt")
+        torch.save(model.state_dict(), save_path)
+        get_logger().info("Adapted model checkpoint saved to %s", save_path)
+    
     return model
 
 def load_json(file_path: str):

@@ -31,7 +31,7 @@ from opensora.models.layers.blocks import (
 )
 from opensora.models.layers.rotary_embedding_torch import RotaryEmbedding
 from opensora.registry import MODELS
-from opensora.utils.ckpt_utils import load_checkpoint, load_checkpoint_exclude_layers
+from opensora.utils.ckpt_utils import load_checkpoint, load_checkpoint_exclude_layers, load_checkpoint_with_scaled_mapping
 
 
 class STDiT3Block(nn.Module):
@@ -637,6 +637,10 @@ def STDiT3_3B_2(from_pretrained=None, **kwargs):
 def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=True, init_cross_attn=True, **kwargs):
     force_huggingface = kwargs.pop("force_huggingface", False)
     adapt_16ch = kwargs.pop("adapt_16ch", False)
+    orig_mapping_size = kwargs.pop("orig_mapping_size", None)
+    new_mapping_size = kwargs.pop("new_mapping_size", None)
+    scale_mapping_size = orig_mapping_size is not None and new_mapping_size is not None
+    
     if force_huggingface or from_pretrained is not None and not os.path.exists(from_pretrained):
         model = STDiT3.from_pretrained(from_pretrained, **kwargs)
     else:
@@ -644,7 +648,15 @@ def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=True, init_cross_attn
         model = STDiT3(config)
         
         if from_pretrained is not None:
-            if (freeze_other or init_cross_attn) is True:
+            if scale_mapping_size:
+                load_checkpoint_with_scaled_mapping(
+                    model, 
+                    from_pretrained, 
+                    adapt_16ch=adapt_16ch,
+                    orig_mapping_size=orig_mapping_size, 
+                    new_mapping_size=new_mapping_size
+                )
+            elif (freeze_other or init_cross_attn) is True:
                 load_checkpoint_exclude_layers(model, from_pretrained, freeze_other=freeze_other, init_cross_attn=init_cross_attn, adapt_16ch=adapt_16ch)
             else:
                 load_checkpoint(model, from_pretrained)
