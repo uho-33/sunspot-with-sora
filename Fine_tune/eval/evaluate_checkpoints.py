@@ -533,8 +533,6 @@ def main():
                         help='Directory containing validation data')
     parser.add_argument('--results_dir', type=str, default='evaluation_results',
                         help='Directory to save evaluation results')
-    parser.add_argument('--checkpoint_name', type=str, default='ema.pt',
-                        help='The type of model loaded, default ema.pt')
     parser.add_argument('--batch_size', type=int, default=4,
                         help='Batch size for validation')
     parser.add_argument('--specific_checkpoint', type=str, default=None,
