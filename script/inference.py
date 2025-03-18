@@ -12,6 +12,9 @@ from mmengine.runner import set_random_seed
 from tqdm import tqdm
 import numpy as np
 import tempfile
+import pandas as pd
+import os
+from os import path as osp
 
 import sys
 # Add the project root directory to the Python path
@@ -31,42 +34,13 @@ from opensora.utils.inference_utils import (
 from opensora.utils.misc import all_exists, create_logger, is_distributed, is_main_process, to_torch_dtype
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from Fine_tune.utils.inference_utils import modified_get_save_path_name, save_video_as_frames
+from Fine_tune.utils.inference_utils import (
+    modified_get_save_path_name, 
+    save_video_as_frames,
+    load_brightness_prompts,
+    process_brightness_data
+    )
 
-def process_brightness_data(brightness_data, logger):
-    """Process brightness data to ensure it's in the expected format."""
-    try:
-        if isinstance(brightness_data, torch.Tensor):
-            # Convert brightness tensors to lists of numeric values
-            if brightness_data.dim() > 1:
-                # Convert each tensor row to a list of float values
-                formatted_prompts = []
-                for b in range(brightness_data.size(0)):
-                    # Convert to list of float values (not strings)
-                    values = brightness_data[b].cpu().tolist()
-                    formatted_prompts.append(values)
-                return formatted_prompts
-            else:
-                # For 1D tensor, convert to list directly
-                return [brightness_data.cpu().tolist()]
-        elif isinstance(brightness_data, list):
-            # Check if the list contains tensors
-            if brightness_data and isinstance(brightness_data[0], torch.Tensor):
-                return [b.cpu().tolist() if isinstance(b, torch.Tensor) else b for b in brightness_data]
-        # Return as is if it's already in a suitable format
-        return brightness_data
-    except Exception as e:
-        logger.error(f"Error formatting brightness data: {e}")
-        try:
-            # Try converting to float lists
-            return [[float(x) for x in b] for b in brightness_data]
-        except:
-            logger.error("Failed to convert to float lists, using numeric constants")
-            # Last resort: use simple numeric values
-            if isinstance(brightness_data, list):
-                return [0.5] * len(brightness_data)  # Default value as fallback
-            else:
-                return [0.5]  # Single default value
 
 def main():
     torch.set_grad_enabled(False)
@@ -187,14 +161,17 @@ def main():
     # ======================================================
     # == load prompts ==
     prompts = cfg.get("prompt", None)
+    if prompts is not None:
+        prompts = torch.tentor(prompts)
     start_idx = cfg.get("start_index", 0)
     is_validation = cfg.get("is_validation", False)
     
     if prompts is None and not is_validation: 
         if cfg.get("prompt_path", None) is not None:
-            prompts = load_prompts(cfg.prompt_path, start_idx, cfg.get("end_index", None))
+            prompts, prompt_filename  = load_brightness_prompts(cfg.prompt_path, start_idx, cfg.get("end_index", None))
         else:
-            prompts = [cfg.get("prompt_generator", "")] * 1_000_000  # endless loop
+            print("Warning: no input brightness data, use 0 series as data")
+            prompts = torch.tensor([[0]]) 
     process_len = len(prompts)
 
     if is_validation:

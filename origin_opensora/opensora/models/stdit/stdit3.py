@@ -634,12 +634,13 @@ def STDiT3_3B_2(from_pretrained=None, **kwargs):
 
 
 @MODELS.register_module("Sunspot_STDiT3-XL/2")
-def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=True, init_cross_attn=True, **kwargs):
+def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=False, init_cross_attn=False, training=True, **kwargs):
     force_huggingface = kwargs.pop("force_huggingface", False)
     adapt_16ch = kwargs.pop("adapt_16ch", False)
-    orig_mapping_size = kwargs.pop("orig_mapping_size", None)
-    new_mapping_size = kwargs.pop("new_mapping_size", None)
-    scale_mapping_size = orig_mapping_size is not None and new_mapping_size is not None
+    if training and scale_mapping_size:
+        orig_mapping_size = kwargs.pop("orig_mapping_size", None)
+        new_mapping_size = kwargs.pop("new_mapping_size", None)
+        scale_mapping_size = orig_mapping_size is not None and new_mapping_size is not None
     
     if force_huggingface or from_pretrained is not None and not os.path.exists(from_pretrained):
         model = STDiT3.from_pretrained(from_pretrained, **kwargs)
@@ -648,16 +649,22 @@ def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=True, init_cross_attn
         model = STDiT3(config)
         
         if from_pretrained is not None:
-            if scale_mapping_size:
-                load_checkpoint_with_scaled_mapping(
-                    model, 
-                    from_pretrained, 
-                    adapt_16ch=adapt_16ch,
-                    orig_mapping_size=orig_mapping_size, 
-                    new_mapping_size=new_mapping_size
-                )
-            elif (freeze_other or init_cross_attn) is True:
-                load_checkpoint_exclude_layers(model, from_pretrained, freeze_other=freeze_other, init_cross_attn=init_cross_attn, adapt_16ch=adapt_16ch)
+            if training:
+                if  scale_mapping_size:
+                    load_checkpoint_with_scaled_mapping(
+                        model, 
+                        from_pretrained, 
+                        adapt_16ch=adapt_16ch,
+                        orig_mapping_size=orig_mapping_size, 
+                        new_mapping_size=new_mapping_size
+                    )
+                elif  (freeze_other or init_cross_attn) is True:
+                    load_checkpoint_exclude_layers(
+                        model, 
+                        from_pretrained, 
+                        freeze_other=freeze_other, 
+                        init_cross_attn=init_cross_attn, 
+                        adapt_16ch=adapt_16ch)
             else:
                 load_checkpoint(model, from_pretrained)
     return model

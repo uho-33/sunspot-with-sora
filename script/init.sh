@@ -2,7 +2,6 @@ code --install-extension ms-python.python
 code --install-extension VisualStudioExptTeam.vscodeintellicode
 code --install-extension GitHub.copilot-chat
 code --install-extension ms-toolsai.jupyter
-mkdir -p /content/dataset
 cp /content/drive/MyDrive/projects/dataset/VAE-sunspot-with-sora.zip /content/
 unzip /content/VAE-sunspot-with-sora.zip -d /content/
 pip install -r requirements.txt
