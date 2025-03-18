@@ -352,7 +352,7 @@ def load_checkpoint_with_scaled_mapping(
     cache_dir=None,
     device: torch.device | str = "cuda",
     orig_mapping_size=256,
-    new_mapping_size=1024,
+    new_mapping_size=512,
     adaptation_method="linear",  # Options: "linear", "truncate", "copy" 
 ):
     """
@@ -438,18 +438,88 @@ def load_checkpoint_with_scaled_mapping(
                     tensor[:min_shape[0], :min_shape[1], :min_shape[2], :min_shape[3]]
             return result
 
+    # Special function to handle projection layers with their specific dimensions
+    def adapt_projection_layer(key, param, checkpoint_param):
+        if "fc1.weight" in key:
+            # For fc1.weight, input dimension (dim=1) is the embedding size that changed
+            get_logger().info(f"Adapting projection layer: {key}")
+            if param.shape[1] != checkpoint_param.shape[1]:
+                # Create a new weight matrix with the right dimensions
+                adapted = torch.zeros(param.shape, device=checkpoint_param.device, dtype=checkpoint_param.dtype)
+                
+                # Copy the existing weights
+                min_dim = min(param.shape[1], checkpoint_param.shape[1])
+                adapted[:, :min_dim] = checkpoint_param[:, :min_dim]
+                
+                # Initialize the new part of the weights if expanding
+                if param.shape[1] > checkpoint_param.shape[1]:
+                    # Initialize new weights with small random values
+                    std_dev = checkpoint_param.std() * 0.1
+                    new_weights = torch.randn(param.shape[0], param.shape[1] - min_dim, 
+                                            device=checkpoint_param.device, 
+                                            dtype=checkpoint_param.dtype) * std_dev
+                    adapted[:, min_dim:] = new_weights
+                
+                return adapted
+            return checkpoint_param
+            
+        elif "fc2.weight" in key:
+            # For fc2.weight, output dimension (dim=0) hasn't changed
+            # But input dimension (dim=1) is the hidden dimension and might need adjustment
+            get_logger().info(f"Adapting projection layer: {key}")
+            if param.shape[1] != checkpoint_param.shape[1]:
+                # Typically this is the hidden dimension which is usually a multiple of the input dim
+                scale_factor = param.shape[1] / checkpoint_param.shape[1]
+                if scale_factor.is_integer():
+                    scale_factor = int(scale_factor)
+                    # Repeat the columns to match the new dimension
+                    adapted = checkpoint_param.repeat(1, scale_factor)
+                    adapted = adapted / scale_factor  # Scale down to maintain output magnitude
+                else:
+                    # If not a clean multiple, create a new matrix and initialize
+                    adapted = torch.zeros(param.shape, device=checkpoint_param.device, dtype=checkpoint_param.dtype)
+                    # Copy as much as we can
+                    min_dim = min(param.shape[1], checkpoint_param.shape[1])
+                    adapted[:, :min_dim] = checkpoint_param[:, :min_dim]
+                    # Initialize the rest with small random values if expanding
+                    if param.shape[1] > min_dim:
+                        std_dev = checkpoint_param.std() * 0.1
+                        new_weights = torch.randn(param.shape[0], param.shape[1] - min_dim,
+                                                device=checkpoint_param.device,
+                                                dtype=checkpoint_param.dtype) * std_dev
+                        adapted[:, min_dim:] = new_weights
+                
+                return adapted
+            return checkpoint_param
+            
+        elif "fc1.bias" in key or "fc2.bias" in key:
+            # Biases typically don't change dimension with mapping size changes
+            # But we'll handle just in case
+            if param.shape != checkpoint_param.shape:
+                get_logger().info(f"Adapting bias: {key}")
+                adapted = torch.zeros(param.shape, device=checkpoint_param.device, dtype=checkpoint_param.dtype)
+                min_dim = min(param.shape[0], checkpoint_param.shape[0])
+                adapted[:min_dim] = checkpoint_param[:min_dim]
+                return adapted
+            return checkpoint_param
+            
+        # Default fallback
+        return adapt_tensor_dim(checkpoint_param, param.shape)
+    
     # Function to adapt cross attention weights
     def adapt_cross_attention(key, param, checkpoint_param):
         # Handle different cases of cross-attention components
         if "q_linear.weight" in key:
             # Query dimension remains the same, but embedding dimension changes
             if param.shape[1] != checkpoint_param.shape[1]:
+                get_logger().info(f"Adapting cross-attention query: {key}")
                 return adapt_tensor_dim(checkpoint_param, param.shape, dim=1)
             return checkpoint_param
                 
         elif "kv_linear.weight" in key:
             # KV linear weight handles the embedding dimension change
             if param.shape[0] != checkpoint_param.shape[0] or param.shape[1] != checkpoint_param.shape[1]:
+                get_logger().info(f"Adapting cross-attention kv: {key}")
                 # First adjust output dimension (0) if needed
                 adapted = checkpoint_param
                 if param.shape[0] != checkpoint_param.shape[0]:
@@ -463,6 +533,7 @@ def load_checkpoint_with_scaled_mapping(
         elif "proj.weight" in key:
             # Output projection needs to handle output dimension properly
             if param.shape[0] != checkpoint_param.shape[0] or param.shape[1] != checkpoint_param.shape[1]:
+                get_logger().info(f"Adapting cross-attention projection: {key}")
                 # First adapt input dimension (1)
                 adapted = checkpoint_param
                 if param.shape[1] != checkpoint_param.shape[1]:
@@ -475,6 +546,7 @@ def load_checkpoint_with_scaled_mapping(
                 
         elif "bias" in key:
             if param.shape != checkpoint_param.shape:
+                get_logger().info(f"Adapting cross-attention bias: {key}")
                 return adapt_tensor_dim(checkpoint_param, param.shape, dim=0)
             return checkpoint_param
                 
@@ -536,20 +608,12 @@ def load_checkpoint_with_scaled_mapping(
                     
                     adapted_ckpt[key] = adapted_param
                 
-                elif "y_embedder.y_proj" in key:
-                    # For y_proj components, adapt based on the embedding dimension change
-                    get_logger().info(f"Adapting projection layer: {key}")
-                    
-                    if "weight" in key:
-                        # For FC layers, handle both input and output dimensions
-                        adapted_ckpt[key] = adapt_tensor_dim(checkpoint_param, param.shape)
-                    elif "bias" in key:
-                        # For bias, simply reshape or pad as needed
-                        adapted_ckpt[key] = adapt_tensor_dim(checkpoint_param, param.shape, dim=0)
+                elif "y_embedder.y_proj.fc" in key:
+                    # Special handling for MLP layers in y_proj
+                    adapted_ckpt[key] = adapt_projection_layer(key, param, checkpoint_param)
                 
                 elif "cross_attn" in key:
                     # For cross-attention components, use specialized adaptation
-                    get_logger().info(f"Adapting cross-attention: {key}")
                     adapted_ckpt[key] = adapt_cross_attention(key, param, checkpoint_param)
                 
                 else:

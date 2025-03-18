@@ -13,18 +13,18 @@ bucket_config = {
 grad_checkpoint = True
 
 # Add this to your configuration:
-batch_size = 4  
+batch_size = 32  
 
 # Acceleration settings
-num_workers = 6
-num_bucket_build_workers = 12
+num_workers = 8
+num_bucket_build_workers = 16
 dtype = "bf16"
 plugin = "zero1"
 
 # Model settings
 model = dict(
     type="Sunspot_STDiT3-XL/2",
-    from_pretrained="outputs/0004-Sunspot_STDiT3-XL-2/epoch457-global_step21500/ema.pt",
+    from_pretrained="outputs/0001-Sunspot_STDiT3-XL-2/epoch457-global_step21500/ema.pt",
     qk_norm=True,
     enable_flash_attn=True,
     enable_layernorm_kernel=False,
@@ -35,7 +35,7 @@ model = dict(
     freeze_other=False, 
     init_cross_attn=False,
     orig_mapping_size=256,
-    new_mapping_size=512,
+    new_mapping_size=1024,
 )
 vae = dict(
     type="OpenSoraVAE_V1_3",
@@ -53,7 +53,7 @@ vae = dict(
 text_encoder = dict(
     type="fourier",
     from_pretrained=None,
-    mapping_size=512,  # Changed from 256 to 1024
+    mapping_size=1024,  # Changed from 256 to 1024
     model_max_length=64,
     shardformer=True,
 )
@@ -67,9 +67,9 @@ scheduler = dict(
 seed = 42
 outputs = "outputs"
 wandb = True
-epochs = 1000
+epochs = 10000
 log_every = 10
-ckpt_every = 1000
+ckpt_every = 200
 
 # optimization settings
 lr = 5e-5
