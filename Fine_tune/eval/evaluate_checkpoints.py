@@ -545,6 +545,8 @@ def main():
                         help='Weights & Biases entity/team name')
     parser.add_argument('--wandb_run_name', type=str, default=None,
                         help='Weights & Biases run name')
+    parser.add_argument('--checkpoint_name', type=str, default="ema.pt",
+                        help='used checkpoint type, default ema.pt')
     args = parser.parse_args()
     
     # Log initial information

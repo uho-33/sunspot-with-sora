@@ -5,7 +5,7 @@
 # Default values
 CONFIG="Fine_tune/configs/train/evaluate.py"
 CHECKPINTS_DIR_NAME="0004-Sunspot_STDiT3-XL-2"
-CHECKPOINT_NAME=""
+CHECKPOINT_NAME="model"
 CHECKPOINTS_DIR="../outputs/${CHECKPINTS_DIR_NAME}"
 VALIDATION_DATA_DIR="/content/dataset/validation"
 RESULTS_DIR="output/evaluation_results/${CHECKPINTS_DIR_NAME}/${CHECKPOINT_NAME}"

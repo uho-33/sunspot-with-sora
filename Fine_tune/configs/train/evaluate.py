@@ -13,7 +13,7 @@ bucket_config = {
 grad_checkpoint = True
 
 # Add this to your configuration:
-batch_size = 4  
+batch_size = 8  
 
 # Acceleration settings
 num_workers = 6
