@@ -24,7 +24,7 @@ plugin = "zero1"
 # Model settings
 model = dict(
     type="Sunspot_STDiT3-XL/2",
-    from_pretrained="outputs/0001-Sunspot_STDiT3-XL-2/epoch457-global_step21500/ema.pt",
+    from_pretrained="outputs/0003-Sunspot_STDiT3-XL-2/epoch119-global_step600",
     qk_norm=True,
     enable_flash_attn=True,
     enable_layernorm_kernel=False,
@@ -67,12 +67,12 @@ scheduler = dict(
 seed = 42
 outputs = "outputs"
 wandb = True
-epochs = 10000
+epochs = 2000
 log_every = 10
 ckpt_every = 200
 
 # optimization settings
-lr = 5e-5
+lr = 2e-5
 warmup_steps = 500
 grad_clip = 1.0
 adam_eps = 1e-15
