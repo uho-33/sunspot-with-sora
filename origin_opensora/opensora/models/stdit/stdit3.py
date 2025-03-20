@@ -634,13 +634,15 @@ def STDiT3_3B_2(from_pretrained=None, **kwargs):
 
 
 @MODELS.register_module("Sunspot_STDiT3-XL/2")
-def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=False, init_cross_attn=False, training=True, **kwargs):
+def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=False, init_cross_attn=False, training=True, 
+                        orig_mapping_size=None, new_mapping_size=None, **kwargs):
     force_huggingface = kwargs.pop("force_huggingface", False)
     adapt_16ch = kwargs.pop("adapt_16ch", False)
+    scale_mapping_size = orig_mapping_size is not None and new_mapping_size is not None
     if training and scale_mapping_size:
         orig_mapping_size = kwargs.pop("orig_mapping_size", None)
         new_mapping_size = kwargs.pop("new_mapping_size", None)
-        scale_mapping_size = orig_mapping_size is not None and new_mapping_size is not None
+        
     
     if force_huggingface or from_pretrained is not None and not os.path.exists(from_pretrained):
         model = STDiT3.from_pretrained(from_pretrained, **kwargs)
@@ -651,6 +653,7 @@ def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=False, init_cross_att
         if from_pretrained is not None:
             if training:
                 if  scale_mapping_size:
+                    print("loading with scale change...")
                     load_checkpoint_with_scaled_mapping(
                         model, 
                         from_pretrained, 
@@ -659,6 +662,7 @@ def Sunspot_STDiT3_XL_2(from_pretrained=None, freeze_other=False, init_cross_att
                         new_mapping_size=new_mapping_size
                     )
                 elif  (freeze_other or init_cross_attn) is True:
+                    print("loading with freeze or init...")
                     load_checkpoint_exclude_layers(
                         model, 
                         from_pretrained, 

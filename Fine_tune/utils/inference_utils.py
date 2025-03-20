@@ -31,7 +31,7 @@ def modified_get_save_path_name(
 
 
 
-def save_video_as_frames(video_tensor, save_dir, prefix="frame_", verbose=True ):
+def save_video_as_frames(video_tensor, save_dir, prefix="frame_", verbose=True):
     """
     Save a video tensor [C, T, H, W] as individual image frames.
     
@@ -39,13 +39,20 @@ def save_video_as_frames(video_tensor, save_dir, prefix="frame_", verbose=True )
         video_tensor (torch.Tensor): Video tensor of shape [C, T, H, W]
         save_dir (str): Directory to save the frames
         prefix (str): Prefix for filenames (default: "frame_")
-        verbose(bool):  print information
+        verbose(bool): Print information
     """
     # Create directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
     
-    # Get dimensions
-    C, T, H, W = video_tensor.shape
+    # Handle case where we have a single frame tensor [C, H, W]
+    if len(video_tensor.shape) == 3:
+        C, H, W = video_tensor.shape
+        T = 1
+        video_tensor = video_tensor.unsqueeze(1)  # [C, 1, H, W]
+        print(f"Expanded single frame to shape: {video_tensor.shape}")
+    else:
+        C, T, H, W = video_tensor.shape
+    
     print(f"Saving {T} frames to {save_dir}")
     
     # Save each frame as a separate image
@@ -61,7 +68,7 @@ def save_video_as_frames(video_tensor, save_dir, prefix="frame_", verbose=True )
             value_range=(-1, 1)
         )
     if verbose:
-        print(f"Saved to {save_dir}")
+        print(f"Saved {T} frames to {save_dir}")
     return save_dir
 
 

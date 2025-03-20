@@ -1,0 +1,38 @@
+{
+  "T1_framesauto": {
+    "input_shape": "torch.Size([1, 16, 1, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T1_frames1": {
+    "input_shape": "torch.Size([1, 16, 1, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T1_frames3": {
+    "input_shape": "torch.Size([1, 16, 1, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T5_framesauto": {
+    "input_shape": "torch.Size([1, 16, 5, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T5_frames5": {
+    "input_shape": "torch.Size([1, 16, 5, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T5_frames17": {
+    "input_shape": "torch.Size([1, 16, 5, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T15_framesauto": {
+    "input_shape": "torch.Size([1, 16, 15, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T15_frames15": {
+    "input_shape": "torch.Size([1, 16, 15, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  },
+  "T15_frames51": {
+    "input_shape": "torch.Size([1, 16, 15, 30, 30])",
+    "error": "Got unsupported ScalarType BFloat16"
+  }
+}

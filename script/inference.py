@@ -83,7 +83,7 @@ def main():
     # == build text-encoder and vae ==
     text_encoder = build_module(cfg.text_encoder, MODELS, device=device)
     vae = build_module(cfg.vae, MODELS).to(device, dtype).eval()
-
+    is_validation = cfg.get("is_validation", False)
     # == prepare video size ==
     image_size = cfg.get("image_size", None)
     if image_size is None:
@@ -94,6 +94,9 @@ def main():
         ), "resolution and aspect_ratio must be provided if image_size is not provided"
         image_size = get_image_size(resolution, aspect_ratio)
     num_frames = get_num_frames(cfg.num_frames)
+
+    # Set FPS for generation in non-validation mode
+    fps = cfg.get("fps", 8)  # Default to 8 if not specified
 
     # == build diffusion model ==
     input_size = (num_frames, *image_size)
@@ -161,10 +164,9 @@ def main():
     # ======================================================
     # == load prompts ==
     prompts = cfg.get("prompt", None)
-    if prompts is not None:
-        prompts = torch.tentor(prompts)
+    if prompts is not None and not isinstance(prompts, torch.Tensor):
+        prompts = torch.tensor(prompts)
     start_idx = cfg.get("start_index", 0)
-    is_validation = cfg.get("is_validation", False)
     
     if prompts is None and not is_validation: 
         if cfg.get("prompt_path", None) is not None:
@@ -209,7 +211,8 @@ def main():
     os.makedirs(save_dir, exist_ok=True)
     sample_name = cfg.get("sample_name", None)
     prompt_as_path = cfg.get("prompt_as_path", False)
-    prompt_filename_as_path = cfg.get("prompt_filename_as_path", False)
+
+    prompt_filename_as_path = True  # Force it to be True regardless of config
 
     use_sdedit = cfg.get("use_sdedit", False)
     use_oscillation_guidance_for_text = cfg.get("use_oscillation_guidance_for_text", None)
@@ -259,15 +262,43 @@ def main():
             z = torch.randn(len(batch_prompts), vae.out_channels, *latent_size, device=device, dtype=dtype)
 
             try:
-                # Extract video dimensions from the batch if available
-                model_kwargs = {}
+                # Always create model_kwargs with proper dimensions
+                batch_size = len(batch_prompts)
+                
+                # For validation data, use dimensions from batch
                 if is_validation and 'height' in batch and 'width' in batch and 'num_frames' in batch:
                     model_kwargs = {
                         "height": batch["height"].to(device),
                         "width": batch["width"].to(device),
                         "num_frames": batch["num_frames"].to(device),
-                        "fps": batch["fps"].to(device) if "fps" in batch else torch.ones(len(batch_prompts), device=device) * 16.0
+                        "fps": batch["fps"].to(device) if "fps" in batch else torch.ones(batch_size, device=device) * 16.0
                     }
+                else:
+                    # For non-validation mode or when batch doesn't have dimensions,
+                    # set parameters from config - ensure values are at least 1
+                    model_kwargs = {
+                        "height": torch.tensor([max(1, image_size[0])] * batch_size, device=device),
+                        "width": torch.tensor([max(1, image_size[1])] * batch_size, device=device),
+                        "num_frames": torch.tensor([max(1, num_frames)] * batch_size, device=device),
+                        "fps": torch.tensor([fps] * batch_size, device=device),
+                    }
+                
+                # Debug log the model_kwargs to verify dimensions
+                if verbose >= 2:
+                    logger.info(f"Using model_kwargs: {model_kwargs}")
+                    logger.info(f"z shape: {z.shape}, batch_prompts shape: {batch_prompts.shape if isinstance(batch_prompts, torch.Tensor) else 'not a tensor'}")
+                
+                # Ensure latent size is compatible with the model
+                # if z.shape[2] == 0 or z.shape[3] == 0 or z.shape[4] == 0:
+                #     logger.error(f"Invalid latent dimensions: {z.shape}. Adjusting...")
+                #     # Fix dimensions to prevent zero-sized dimensions
+                #     if z.shape[2] == 0:  # Time dimension
+                #         z = torch.randn(len(batch_prompts), vae.out_channels, 1, z.shape[3], z.shape[4], device=device, dtype=dtype)
+                #     if z.shape[3] == 0 or z.shape[4] == 0:  # Height or width
+                #         min_spatial_dim = 32  # Minimum spatial dimension for the model
+                #         z = torch.randn(len(batch_prompts), vae.out_channels, max(1, z.shape[2]), 
+                #                        max(min_spatial_dim, z.shape[3]), max(min_spatial_dim, z.shape[4]), 
+                #                        device=device, dtype=dtype)
 
                 samples = scheduler.sample(
                     model,
@@ -279,9 +310,10 @@ def main():
                     use_sdedit=use_sdedit,
                     use_oscillation_guidance_for_text=use_oscillation_guidance_for_text,
                     use_oscillation_guidance_for_image=use_oscillation_guidance_for_image,
-                    additional_args=model_kwargs  # Pass any additional arguments needed
+                    additional_args=model_kwargs  # Pass dimensions to the model
                 )
                 video_clips.append(samples)
+                print(f"video_clips[0].shape :{video_clips[0].shape}")
             except Exception as e:
                 logger.error(f"Error during sampling: {e}")
                 import traceback
@@ -303,14 +335,16 @@ def main():
                         if t_cut < video.size(1):
                             video = video[:, :t_cut]
 
+
                         # Decode with proper error handling
                         try:
                             decoded_video = vae.decode(video.to(dtype), num_frames=t_cut * 17 // 5).squeeze(0)
                             logger.info(f"Video decoded successfully, size: {decoded_video.size()}")
+                            print(f"Video decoded successfully, size: {decoded_video.size()}")
                             
                             save_path = save_video_as_frames(
                                 decoded_video, 
-                                save_path=save_path,
+                                save_dir=save_path,
                                 verbose=verbose >= 2,
                             )
                             logger.info(f"Video saved to {save_path}")

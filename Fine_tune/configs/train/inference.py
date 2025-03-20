@@ -1,9 +1,16 @@
 
 # Add this to your configuration:
+# Log settings
+seed = 42
+save_dir = "outputs/inference"
+image_size=(240,240)
+num_frames=24
+fps=8
 batch_size = 1  
 prompt_path = "/content/dataset/training/brightness/L16-S8/20211212_120000.npz"
-
-
+text_encoder_mapping_size = 256
+frame_interval = 1
+prompt_filename_as_path = True
 
 
 # Acceleration settings
@@ -15,7 +22,7 @@ plugin = "zero1"
 # Model settings
 model = dict(
     type="Sunspot_STDiT3-XL/2",
-    from_pretrained="outputs/0003-Sunspot_STDiT3-XL-2/epoch119-global_step600",
+    from_pretrained="outputs/0001-Sunspot_STDiT3-XL-2/epoch457-global_step21500/ema.pt",
     qk_norm=True,
     enable_flash_attn=True,
     enable_layernorm_kernel=False,
@@ -28,18 +35,18 @@ vae = dict(
     from_pretrained="hpcai-tech/OpenSora-VAE-v1.3",
     z_channels=16,
     micro_batch_size=1,
-    micro_batch_size_2d=4,
-    micro_frame_size=17,
-    use_tiled_conv3d=True,
-    tile_size=4,
+    micro_batch_size_2d=1,   
+    micro_frame_size=1,      
+    use_tiled_conv3d=False,     
+    tile_size=2,
     normalization="video",
-    temporal_overlap=True,
-    force_huggingface=True,
+    temporal_overlap=False,
+    force_huggingface=True,     
 )
 text_encoder = dict(
     type="fourier",
     from_pretrained=None,
-    mapping_size=1024,  
+    mapping_size=text_encoder_mapping_size,  
     model_max_length=64,
     shardformer=True,
 )
@@ -49,8 +56,4 @@ scheduler = dict(
     use_timestep_transform=True,
 )
 
-# Log settings
-seed = 42
-save_dir = "outputs/inference"
-wandb = True
-log_every = 10
+
