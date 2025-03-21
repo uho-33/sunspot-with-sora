@@ -4,16 +4,17 @@
 
 # Default values
 CONFIG="Fine_tune/configs/train/evaluate.py"
-CHECKPOINTS_DIR_NAME="test"
+CHECKPOINTS_DIR_NAME="0009-Sunspot_STDiT3-XL-2"
+STAGE=3
 CHECKPOINT_NAME="ema.pt" #"ema.pt" or ""
 CHECKPOINTS_DIR="outputs/${CHECKPOINTS_DIR_NAME}"
 VALIDATION_DATA_DIR="/content/dataset/validation"
 RESULTS_DIR="outputs/evaluation_results/${CHECKPOINTS_DIR_NAME}/${CHECKPOINT_NAME}"
-BATCH_SIZE=5
+BATCH_SIZE=10
 USE_WANDB=True
 WANDB_PROJECT="sun-reconstruction-eval"
 WANDB_ENTITY=""
-WANDB_RUN_NAME="${CHECKPOINTS_DIR_NAME}"
+WANDB_RUN_NAME="stage${STAGE}-${CHECKPOINTS_DIR_NAME}"
 NUM_GPUS=1
 
 # Parse named arguments

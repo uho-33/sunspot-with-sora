@@ -149,6 +149,7 @@ def evaluate_checkpoint(cfg, checkpoint_path, validation_dataloader, device, dty
             set_sequence_parallel_group(dist.group.WORLD)
     
     cfg.model["from_pretrained"] = checkpoint_path
+    print(f"from_pretrained={cfg.model['from_pretrained']}")
     model = build_module(
         cfg.model,
         MODELS,

@@ -2,9 +2,9 @@
 # Add this to your configuration:
 # Log settings
 seed = 42
-save_dir = "outputs/inference"
+save_dir = "outputs/inference/test2"
 image_size=(240,240)
-num_frames=24
+num_frames=16
 fps=8
 batch_size = 1  
 prompt_path = "/content/dataset/training/brightness/L16-S8/20211212_120000.npz"
@@ -22,7 +22,7 @@ plugin = "zero1"
 # Model settings
 model = dict(
     type="Sunspot_STDiT3-XL/2",
-    from_pretrained="outputs/0001-Sunspot_STDiT3-XL-2/epoch457-global_step21500/ema.pt",
+    from_pretrained="outputs/0009-Sunspot_STDiT3-XL-2/epoch18-global_step200",
     qk_norm=True,
     enable_flash_attn=True,
     enable_layernorm_kernel=False,

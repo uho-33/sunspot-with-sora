@@ -13,7 +13,7 @@ bucket_config = {
 grad_checkpoint = True
 
 # Add this to your configuration:
-batch_size = 8  
+batch_size = 30  
 
 # Acceleration settings
 num_workers = 6
@@ -29,11 +29,9 @@ model = dict(
     enable_flash_attn=True,
     enable_layernorm_kernel=False,
     ignore_mismatched_sizes=True,
-    class_dropout_prob=0.1,
     kernel_size=(8, 8, -1),  # H W T
     use_spatial_rope=True,
-    freeze_other=False, 
-    init_cross_attn=False,
+    training=False
 )
 vae = dict(
     type="OpenSoraVAE_V1_3",
@@ -52,6 +50,7 @@ text_encoder = dict(
     type="fourier",
     from_pretrained=None,
     model_max_length=64,
+    mapping_size=256,
     shardformer=True,
 )
 scheduler = dict(
