@@ -220,3 +220,5 @@ saved-model/
 vscode*
 code
 Note/
+scripts/init.sh
+Data_process/process.ipynb
