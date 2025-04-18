@@ -4,6 +4,8 @@
 
 A deep learning model for reconstructing solar continuum intensity maps from total brightness curves, based on Open-Sora text-to-video generation architecture.
 
+[TOC]
+
 ## Overview
 
 Understanding stellar activity is crucial for assessing exoplanet habitability. However, for stars other than the Sun, observational limitations typically only allow for low-resolution data like integrated brightness curves, making it difficult to directly study their surface structures. This project leverages advanced deep learning techniques to reconstruct high-resolution solar images from simple light curves, aiming to establish methodologies that could potentially be applied to other stars.
@@ -63,6 +65,10 @@ cd sunspot-with-sora
 pip install -r requirements.txt
 pip install --no-build-isolation -r requirements-nobuild.txt
 ```
+
+## Model Weights
+
+The pre-trained model weights can be downloaded from [Hugging Face](https://huggingface.co/uho-33/sunspot-with-sora).
 
 ## Training
 
