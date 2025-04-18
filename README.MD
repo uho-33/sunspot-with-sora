@@ -4,7 +4,19 @@
 
 A deep learning model for reconstructing solar continuum intensity maps from total brightness curves, based on Open-Sora text-to-video generation architecture.
 
-[TOC]
+## Table of Contents
+
+- [Exploring the Use of Text-to-Video Models in Reconstructing Solar Observations from Solar Light Curve](#exploring-the-use-of-text-to-video-models-in-reconstructing-solar-observations-from-solar-light-curve)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Repository Structure](#repository-structure)
+  - [Installation](#installation)
+  - [Model Weights](#model-weights)
+  - [Training](#training)
+  - [Results](#results)
+  - [Citation](#citation)
+  - [Acknowledgments](#acknowledgments)
+  - [License](#license)
 
 ## Overview
 
