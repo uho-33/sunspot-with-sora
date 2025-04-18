@@ -91,7 +91,7 @@ Training was performed on a single A100 GPU for a total of 51 hours (1.5 hours f
 ## Results
 
 Our model achieves:
-- Best Mean Absolute Error (MAE): 0.104 (approximately 5% relative error)
+- Best Mean Absolute Error (MAE): 0.104 (≈5% relative to data range)
 - Peak Signal-to-Noise Ratio (PSNR): 13.3 dB
 
 The model successfully reconstructs some structural features of the solar surface, as shown in these sample outputs:
